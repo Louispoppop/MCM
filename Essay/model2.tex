@@ -1,9 +1,149 @@
-\section{Model II: Task 3}
+\section{Model II: Analysis of Celebrity Characteristics and Professional Partners}
 
-\subsection{Problem Analysis}
+\subsection{Assumptions}
+We proceed with the following assumptions for this model:
+\begin{itemize}
+    \item \textbf{Partnership Stability:} We assume the pairing of a celebrity and a professional dancer is constant throughout the season. Rare modifications (e.g., temporary replacements due to injury) are ignored for the sake of model stability.
+    \item \textbf{Data Availability:} We assume the "Base Popularity" derived in Model I is a sufficient proxy for the pre-existing fan base and popularity of the celebrity.
+\end{itemize}
 
-\subsection{Model Preparation}
+\subsubsection{Feature Interpretation and Engineering}
+To analyze the impact of various characteristics, we first categorize and encode the available data. The distributions of the key categorical features—Industry, Age, and Nationality—are summarized in Figure \ref{fig:characteristics_dist}.
 
-\subsection{Model Construction}
+\begin{figure}[h]
+    \centering
+    \begin{minipage}{0.28\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/行业饼图.png}
+        \caption*{Industry}
+        \label{fig:industry_dist}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.28\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/年龄饼图.png}
+        \caption*{Age Groups}
+        \label{fig:age_dist}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.38\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/国籍柱状图.png}
+        \caption*{Nationality}
+        \label{fig:nationality_dist}
+    \end{minipage}
+    \caption{Distribution of Celebrity Characteristics: Industry, Age, and Nationality}
+    \label{fig:characteristics_dist}
+\end{figure}
 
-\subsection{Model Solution}
+\subsubsection{Celebrity Industry}
+The raw data contains over 20 distinct professions. To reduce sparsity and improve interpretability, we grouped them into four main categories based on the nature of their skills:
+\begin{itemize}
+    \item \textbf{Athletic:} (e.g., Athletes, Olympians) Expected to have high stamina and physical coordination.
+    \item \textbf{Performance:} (e.g., Actors, Singers, Models) Accustomed to performing on stage or camera, likely possessing good rhythm.
+    \item \textbf{Media:} (e.g., Hosts, Reality Stars) Skilled in communication and connecting with audiences.
+    \item \textbf{Other:} (e.g., Politicians, Entrepreneurs) The baseline group.
+\end{itemize}
+These are encoded as one-hot variables.
+
+\subsubsection{Age Buckets}
+Age is a critical characteristic affecting physical range and improvement potential. We discretized age into three buckets: \textbf{Young} ($<30$), \textbf{Mid} ($30-55$), and \textbf{Senior} ($>55$).
+
+\subsubsection{Nationality}
+To test for potential "home-field advantage" in voting, we created a binary characteristic \texttt{is\_us}, set to 1 if the celebrity is from the United States, and 0 otherwise.
+
+\subsubsection{Professional Partner Strength}
+The professional partner plays a huge role in a celebrity's journey. We engineered a "Pro Strength" characteristic, calculated as the weighted average of the professional's historical normalized judge scores and historical normalized final placements.
+
+\subsubsection{Base Popularity}
+The \texttt{base\_popularity} computed in Task 1 is included to capture the pre-existing fan base size.
+
+\subsubsection{Target Variable: Normalized Placement}
+To make placement comparable across seasons with different numbers of contestants, we normalized the rank to a $[0, 1]$ scale:
+\[ \text{Placement\_Encoded}_{i,s} = 1 - \frac{\text{Rank}_{i,s} - 1}{N_s} \]
+A value of 1.0 represents the winner, while 0.0 represents the first eliminated.
+
+\subsection{Core Model Construction}
+We employ a \textbf{Linear Mixed-Effects Model (LMM)} to isolate the effect of individual characteristics while controlling for season-to-season systemic variability.
+
+The model is specified as:
+\[ y_{i,s}^{(t)} = \beta_0^{(t)} + \mathbf{x}_{i,s}^{\top} \boldsymbol{\beta}^{(t)} + b_s^{(t)} + \varepsilon_{i,s}^{(t)} \]
+where:
+\begin{itemize}
+    \item $y^{(t)}$ is the target variable (Judge Score Rate, Fan Vote Share, or Placement Encoded).
+    \item $\mathbf{x}_{i,s}$ represents the vector of fixed characteristics (Age, Industry, Nationality, Pro Strength, Base Popularity).
+    \item $b_s^{(t)} \sim \mathcal{N}(0, \sigma_b^2)$ is the random intercept for season $s$.
+    \item $\boldsymbol{\beta}^{(t)}$ are the coefficients quantifying the impact of each characteristic.
+\end{itemize}
+
+\subsection{Validation Strategy and Metrics}
+To ensure robustness, we used two data splitting strategies:
+\begin{enumerate}
+    \item \textbf{Chronological Split:} Training on the first 80\% of seasons, predicting the last 20\%. This tests the model's ability to forecast future outcomes.
+    \item \textbf{Odd-Even Split:} Training on even seasons, testing on odd seasons. This provides a robustness check against specific era-biased trends.
+\end{enumerate}
+
+We evaluate performance using \textbf{RMSE} (Root Mean Square Error) and $\mathbf{R^2}$ (Coefficient of Determination).
+
+\subsection{Results and Discussion}
+
+\subsubsection{Model Performance}
+Table \ref{tab:model_results} shows the performance of our models. The Fan Vote model achieves an exceptionally high $R^2$ of 0.988, confirming that pre-existing popularity is the dominant driver of fan voting.
+
+\begin{table}[h]
+\centering
+\caption{Model Performance Metrics (Chronological Split)}
+\label{tab:model_results}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Target} & \textbf{Train RMSE} & \textbf{Test RMSE} & \textbf{Train $R^2$} & \textbf{Test $R^2$} \\
+\midrule
+Judge Score Rate & 0.082 & 0.104 & 0.608 & 0.439 \\
+Fan Vote Share & 0.010 & 0.007 & 0.988 & 0.988 \\
+Placement Encoded & 0.194 & 0.236 & 0.547 & 0.312 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Analysis of Characteristics on Contestant Success}
+We analyze how much each characteristic impacts the final placement. Figure \ref{fig:popularity_dots} visualizes the strong relationship between popularity and placement.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/人气-排名点图.png}
+    \caption{Relationship between Base Popularity and Final Placement}
+    \label{fig:popularity_dots}
+\end{figure}
+
+The coefficient analysis (summarized in Figure \ref{fig:q1_line}) reveals:
+\begin{itemize}
+    \item \textbf{Base Popularity} ($\beta \approx 2.57$) is by far the most significant characteristic. High initial popularity provides a massive buffer against elimination.
+    \item \textbf{Pro Partner Strength} ($\beta \approx 0.27$) is the second most important. A strong partner can elevate a celebrity's placement by approximately 1 full rank compared to an average partner.
+    \item \textbf{Demographics} have smaller effects. Younger contestants tend to place slightly higher ($\beta \approx 0.03$), likely due to physical advantages.
+    \item \textbf{Industry}: "Performance" and "Media" backgrounds have a slight advantage over the "Other" (Business/Politics) baseline.
+\end{itemize}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/问题1折线图.png}
+    \caption{Coefficient Magnitude of Characteristics on Final Placement}
+    \label{fig:q1_line}
+\end{figure}
+
+\subsubsection{Comparative Impact on Judges vs. Fans}
+Do these characteristics impact judges and fans in the same way? Figure \ref{fig:q2_dumbbell} compares the coefficients for the Judge Score model versus the Fan Vote model.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/问题2哑铃图.png}
+    \caption{Comparison of Characteristic Impact: Judges vs. Fans}
+    \label{fig:q2_dumbbell}
+\end{figure}
+
+The analysis shows a clear divergence:
+\begin{itemize}
+    \item \textbf{Fan Votes} are almost exclusively driven by \textbf{Base Popularity} ($\beta \approx 0.96$). Characteristics like dance ability, age, or even the pro partner have negligible direct impact on the vote share.
+    \item \textbf{Judge Scores} are meritocratic. They are significantly positively influenced by \textbf{Pro Partner Strength} ($\beta \approx 0.23$), \textbf{Performance Industry} ($\beta \approx 0.28$), and \textbf{Youth} ($\beta \approx 0.35$). Popularity has a much smaller effect on judges ($\beta \approx 0.68$, considering the scale difference) compared to fans.
+\end{itemize}
+
+In summary, celebrity characteristics like Age and Industry fundamentally shape the \textbf{technical scores} (Judges), while pre-existing Fame dictates the \textbf{popular vote} (Fans). Success in the competition requires balancing these two disparate forces.
