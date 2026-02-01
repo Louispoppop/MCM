@@ -1,0 +1,149 @@
+% In this section, build the core mathematical models for the problem.
+\section{Model I: Bayesian Reconstruction of Fan Voting Distribution}
+
+\subsection{Problem Formulation}
+The reconstruction of spectator voting data constitutes a classic \textbf{Inverse Problem} with latent variables. The objective is to infer the unobserved distribution of fan votes based on the observed judge scores and the binary elimination outcomes.
+
+Let $\mathcal{C} = \{1, 2, \dots, N\}$ denote the set of contestants in a given season. For any week $t$, let $n_t$ denote the number of active contestants remaining in the competition. We observe the vector of judges' scores $\mathbf{J}_t = [J_{1,t}, \dots, J_{n_t,t}]^\top$ and the elimination outcome $\mathcal{O}_t$ (e.g., the identity of the eliminated contestant). The target variable is the unobserved vector of fan vote shares $\mathbf{S}_t = [S_{1,t}, \dots, S_{n_t,t}]^\top$, which resides on the standard $(n_t-1)$-simplex:
+\begin{equation}
+    \Delta^{n_t-1} = \left\{ \mathbf{x} \in \mathbb{R}^{n_t} \bigg| \sum_{i=1}^{n_t} x_i = 1, x_i > 0 \right\}
+\end{equation}
+
+Given the non-differentiable and discontinuous nature of the elimination rules (ranking vs. percentage combinations), deriving an analytical solution for the posterior probability density $p(\mathbf{S}_t | \mathbf{J}_t, \mathcal{O}_t)$ is computationally intractable. Consequently, we adopt a \textbf{Simulation-Based Inference (SBI)} framework, utilizing \textbf{Approximate Bayesian Computation (ABC)} with rejection sampling. By generating millions of voting scenarios and filtering them against historical ground truth, we approximate the true posterior distribution.
+
+\subsection{Mathematical Model}
+
+\subsubsection{The Mixture Mean Hypothesis}
+We define the \textit{Expected Propensity} $\boldsymbol{\mu}_t$ for the vote shares as a convex combination of the latent Base Popularity and the observed Judge Performance.
+
+Let $\boldsymbol{\beta} \in \Delta^{N-1}$ be the latent Base Popularity vector for all contestants.
+Let $\mathbf{P}_t$ be the normalized judge performance vector at week $t$, where $P_{i,t} = J_{i,t} / \sum_k J_{k,t}$.
+
+The expected propensity for contestant $i$ is:
+\begin{equation}
+    \mu_{i,t} = (1 - \lambda) \cdot \frac{\beta_i}{\sum_{k \in \text{Ext}_t} \beta_k} + \lambda \cdot P_{i,t}
+\end{equation}
+where $\lambda \in [0, 1]$ is the performance weight coefficient (calibrated to $\lambda=0.2$) and $\text{Ext}_t$ represents the set of active contestants in week $t$. The term $\beta_i$ is dynamically re-normalized to account for the shrinking pool of contestants.
+
+\subsubsection{Probabilistic Generative Process (The Prior)}
+We model the actual realized vote shares $\mathbf{S}_t$ as a random variable drawn from a Dirichlet process centered at $\boldsymbol{\mu}_t$:
+\begin{equation}
+    \mathbf{S}_t \sim \text{Dirichlet}(\kappa \cdot \boldsymbol{\mu}_t)
+\end{equation}
+Here, $\kappa$ (set to 50.0) is the concentration parameter controlling the variance. A high $\kappa$ implies that actual votes tightly cluster around the model's expectation, while allowing for stochastic deviation.
+
+\subsubsection{Constraints as Likelihood Functions}
+The historical outcomes act as binary filters (hard constraints) on the sample space. We model the likelihood $L(\mathcal{O}_t | \mathbf{S}_t, \mathbf{J}_t)$ as an indicator function $\mathbb{I}(\cdot)$:
+
+\begin{equation}
+    L(\mathcal{O}_t | \mathbf{S}_t, \mathbf{J}_t) =
+    \begin{cases}
+        1, & \text{if } f_{\text{rules}}(\mathbf{S}_t, \mathbf{J}_t) \text{ implies } \mathcal{O}_t \\
+        0, & \text{otherwise}
+    \end{cases}
+\end{equation}
+
+The function $f_{\text{rules}}$ encapsulates the season-specific aggregation logic:
+\begin{itemize}
+    \item \textbf{Rank-Based System:} The elimination target minimizes $[\text{Rank}(\mathbf{S}_t) + \text{Rank}(\mathbf{J}_t)]$.
+    \item \textbf{Percentage-Based System:} The elimination target minimizes $[\mathbf{S}_t + \mathbf{P}_t]$.
+    \item \textbf{Strict Ordering (Finals):} The combined scores must strictly preserve the historical ranking $1^{st} > 2^{nd} > 3^{rd}$.
+\end{itemize}
+
+\subsection{Solution Algorithm: Iterative Inverse Solving}
+
+To estimate the latent parameter vector $\boldsymbol{\beta}$ (which varies by contestant but is constant across time), we developed a heuristic algorithm inspired by the \textbf{Expectation-Maximization (EM)} algorithm. This approach iteratively refines $\boldsymbol{\beta}$ to resolve "Survivorship Bias"—ensuring that the estimated popularity explains why a contestant survived early weeks despite potentially low scores.
+
+\subsubsection{Phase I: Parameter Estimation (Global Solver)}
+We seek the optimal $\hat{\boldsymbol{\beta}}$ that maximizes the consistency of the model across all $T$ weeks.
+
+\textbf{Initialization:} Set $\boldsymbol{\beta}^{(0)} = [1/N, \dots, 1/N]$.
+
+\textbf{Iteration $k$ (Repeat until convergence):}
+\begin{enumerate}
+    \item \textbf{E-Step (Sampling):} For each week $t$, draw $M$ samples $\{\mathbf{S}_t^{(m)}\}_{m=1}^M$ from the prior $\text{Dir}(\kappa \cdot \boldsymbol{\mu}_t^{(k)})$.
+
+    \item \textbf{Filter Step:} Retain only the subset of valid samples $\Phi_t$ where the generated votes lead to the correct historical elimination (Likelihood $= 1$).
+
+    \item \textbf{M-Step (De-mixing Update):} Compute the posterior mean $\bar{\mathbf{S}}_t$ of the valid samples. We then invert Eq. (3) to recover the \textit{implied} base popularity that would have generated this result:
+          \begin{equation}
+              \hat{\beta}_{i,t}^{\text{implied}} \leftarrow \frac{\bar{S}_{i,t} - \lambda P_{i,t}}{1-\lambda}
+          \end{equation}
+          The global update $\beta_i^{(k+1)}$ is obtained by averaging these implied values over all weeks contestant $i$ participated.
+\end{enumerate}
+
+\subsubsection{Phase II: Posterior Inference}
+Upon convergence to $\boldsymbol{\beta}^*$, we perform a final high-density Monte Carlo simulation ($N_{sim}=20,000$) using the optimized parameters. The final estimate for the vote share is the mean of the valid posterior distribution:
+\begin{equation}
+    \hat{S}_{i,t} = \mathbb{E}[\mathbf{S}_{i,t} | \mathcal{O}_t] \approx \frac{1}{|\Phi_t|} \sum_{\mathbf{s} \in \Phi_t} s_{i,t}
+\end{equation}
+
+\subsection{Model Result and Validation}
+
+To address the key requirements of the problem, we evaluate the performance of our model focusing on two dimensions: \textbf{Consistency} (Accuracy against history) and \textbf{Certainty} (Statistical confidence of estimates).
+
+\subsubsection{Consistency Verification}
+\textbf{Question:} Does the model correctly estimate fan votes that lead to results consistent with who was eliminated each week?
+
+To answer this, we define the \textbf{Historical Reproduction Rate} as our primary measure of consistency. For every week $t$, we take the estimated posterior mean votes $\hat{\mathbf{S}}_t$ and the actual judge scores $\mathbf{J}_t$, apply the specific aggregation rule for that season (Rank or Percent), and check if the resulting elimination candidate matches the historical record $\mathcal{O}_t$.
+
+\begin{itemize}
+    \item \textbf{Result:} Our model achieves a global consistency rate of \textbf{98.3\%} across 34 seasons.
+    \item \textbf{Interpretation:} This indicates that the estimated fan votes effectively reconstruct the ground truth of the competition. In the remaining 1.7\% of cases, the historical result usually involves a "Shock Elimination" or extremely tight margins that are statistically indistinguishable within the noise of the Monte Carlo simulation.
+\end{itemize}
+
+\subsubsection{Certainty Quantification}
+\textbf{Question:} How much certainty is there in the fan vote totals, and is that certainty always the same for each contestant?
+
+We use the \textbf{Coefficient of Variation (CV)}, defined as the ratio of the standard deviation to the mean estimate ($CV = \sigma / \mu$), to quantify certainty.
+
+\begin{itemize}
+    \item \textbf{Global Certainty:} The average CV across all estimates is \textbf{0.4615}. This represents a moderate level of uncertainty, which is expected given that we are solving an underdetermined inverse problem.
+    \item \textbf{Variation of Certainty:} The certainty is \textbf{not} uniform; it varies significantly depending on the contestant's competitive context.
+          \begin{itemize}
+              \item \textbf{High Certainty (Low CV $< 0.15$):} Observed for contestants on the "Bubble" (at risk of elimination). The constraints tightly bound their feasible vote share; a small deviation would contradict the historical survival/elimination result.
+              \item \textbf{Low Certainty (High CV $> 0.60$):} Observed for "Safe" contestants (high judge scores or massive popularity). Since they are far from the elimination cutoff, the "solution space" for their votes is wide, allowing for greater variance without altering the outcome.
+          \end{itemize}
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{global_cv_distribution.png}
+    \caption{Distribution of Coefficient of Variation (CV) for all vote estimates. }
+    \label{fig:cv_distribution}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{ultimate_correlation.png}
+    \caption{Global Correlation Analysis: Judge Scores vs. Estimated Vote Shares. Pink points represent eliminated contestants. The lack of strict linear correlation highlights the significant "de-coupling" effect where popular contestants survive low scores.}
+    \label{fig:ultimate_correlation}
+\end{figure}
+
+
+\subsection{Case Study Validation: The Jerry Rice Controversy}
+To further validate robustness, we examine Season 2 finalist Jerry Rice, who survived despite consistently low judge scores. Figure \ref{fig:season2_jerry} illustrates the stark contrast between his judge scores and our estimated fan support throughout the season.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{season2_jerry vs drew.png}
+    \caption{Comparison of Judge Scores (Top) and Estimated Fan Vote Share (Bottom) for Jerry Rice vs. Drew Lachey in Season 2. Despite consistently lower judge scores, Rice commanded a significantly higher vote share in early weeks.}
+    \label{fig:season2_jerry}
+\end{figure}
+
+\begin{itemize}
+    \item \textbf{Model Output:} The model infers a \textbf{Base Popularity of 31.6\%} for Rice (highest in the season), compared to a Judge Performance Share of only $\sim 21\%$.
+    \item \textbf{Conclusion:} The model autonomously adjusted the latent popularity variable to explain his survival, confirming that the mixture prior correctly captures the trade-off between technical skill and fan support.
+\end{itemize}
+
+Figure \ref{fig:season2_pie} further details the composition of the final outcome. While Judges favored Drew Lachey, the fan vote distribution (Right) was heavily skewed towards Jerry Rice, explaining the close finish observed in history.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{season2_final_pie.png}
+    \caption{Final Week Composition: Judge Score Share (Left) vs. Estimated Fan Vote Share (Right). Rice's 45.3\% fan share nearly overcame Lachey's lead in technical scores.}
+    \label{fig:season2_pie}
+\end{figure}
+
+
+With the successful reconstruction of the latent fan voting distribution $\hat{\mathbf{S}}_t$ across all 34 seasons, we have effectively "opened the black box" of the DWTS voting history. This reconstructed dataset serves as the ground truth for our subsequent analysis. In the following section (Model II), we will utilize these estimated vote shares to conduct counterfactual simulations, aiming to evaluate how different aggregation rules would have altered historical outcomes and to scientifically determine the optimal competition format.

@@ -1,0 +1,43 @@
+\section{Notations}
+\setlength{\parindent}{2em}
+
+The core symbols and their definitions used in this study are summarized in Table~\ref{table:notations}, providing an overview of the key parameters and their related meanings.
+
+\begin{table}[ht]
+  \centering
+  \caption{\textbf{Notations used in this paper}}
+  \renewcommand{\arraystretch}{1.5}
+  \begin{tabular}{>{\centering\arraybackslash}p{0.3\linewidth} >{\centering\arraybackslash}p{0.6\linewidth}}
+    \toprule
+    \textbf{Symbol} & \textbf{Description} \\
+    \midrule
+    $\text{CSY}$  & Fisherman \\
+    \bottomrule
+  \end{tabular}
+  \label{table:notations}
+\end{table}
+
+\begin{table}[ht]
+  \centering
+  \caption{Main variables and meanings}
+  \renewcommand{\arraystretch}{1.2}
+  \begin{tabular}{cll}
+    \toprule
+   \textbf{Symbol}&\textbf{Description}&\textbf{Definition / Value}\\
+    \midrule
+        $\mathbf{S}_t$       & Latent fan vote share vector at week $t$           & $\mathbf{S}_t \in \Delta^{n_t-1}$                            \\
+        $\mathbf{J}_t$       & Observed judges' score vector at week $t$          & $\mathbf{J}_t \in \mathbb{R}^{n_t}$                          \\
+        $\mathcal{O}_t$      & Observed elimination outcome at week $t$           & Binary / Categorical                                         \\
+        $\boldsymbol{\beta}$ & Latent Base Popularity vector                      & $\boldsymbol{\beta} \in \Delta^{N-1}$                        \\
+        $\mathbf{P}_t$       & Normalized judge performance vector                & $P_{i,t} = J_{i,t} / \sum J_{k,t}$                           \\
+        $\boldsymbol{\mu}_t$ & Expected voting propensity                         & $\mu_{i,t} = E[S_{i,t}]$                                     \\
+        $\lambda$            & Performance weight coefficient                     & Constant ($0.2$)                                             \\
+        $\kappa$             & Dirichlet concentration parameter (Prior strength) & Constant ($50.0$)                                            \\
+        $\text{Ext}_t$       & Set of active contestants in week $t$              & Subset of $\mathcal{C}$                                      \\
+        $\Phi_t$             & Set of valid samples satisfying constraints        & $\Phi_t = \{\mathbf{s} \mid L(\mathcal{O}_t|\mathbf{s})=1\}$ \\
+        $CV_{i,t}$           & Coefficient of Variation for partial uncertainty   & $CV = \sigma / \mu$\\
+        \bottomrule
+    \end{tabular}
+\label{table:variables}
+\end{table}
+

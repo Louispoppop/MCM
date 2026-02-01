@@ -1,0 +1,68 @@
+\documentclass{mcmthesis}  % 当使用 CTeX 套装时请注释上一行使用该行的设置
+\mcmsetup{tstyle=\color{red}\bfseries,%修改题号，队号的颜色和加粗显示，黑色可以修改为 black
+tcn = 2617432, problem = C, %修改队号，参赛题号
+sheet = true, titleinsheet = true, keywordsinsheet = true,
+titlepage = false, abstract = true}
+\usepackage{float}
+\usepackage{subcaption}
+%四款字体可以选择
+\usepackage{times}
+%\usepackage{newtxtext}
+%\usepackage{palatino}
+%\usepackage{txfonts}
+
+\usepackage[utf8]{inputenc}
+\usepackage{indentfirst}  %首行缩进，注释掉，首行就不再缩进。
+\usepackage{lipsum}
+
+%\usepackage{ctex}
+
+% 调整页眉高度，消除 fancyhdr 的 \headheight too small 警告
+\setlength{\headheight}{14pt}
+
+\title{TITLE}
+
+\begin{document}
+\input{abstract}
+
+\maketitle
+\tableofcontents
+
+\newpage
+\input{introduction}
+
+\newpage
+\input{assumptions}
+
+\newpage
+\input{notations}
+
+\newpage
+\input{model1}
+
+\newpage
+\input{model2}
+
+\newpage
+\input{model3}
+
+\newpage
+\input{memo}
+
+\newpage
+\input{sensitivity_analysis}
+
+\newpage
+\input{model_evaluation_and_promotion}
+
+\newpage
+\input{conclusions}
+
+\newpage
+\input{references}
+
+\newpage
+\input{AI}
+
+\end{document}
+
