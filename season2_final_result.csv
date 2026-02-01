@@ -1,0 +1,4 @@
+celebrity_name,results,total_judge_score,judge_percentage,vote_share_est,vote_count_est,std_dev,base_popularity,vote_cv
+Drew Lachey,1st Place,29,0.3439,0.3259,4562719,0.0413,0.3281,0.1266
+Stacy Keibler,3rd Place,28.667,0.3399,0.2208,3091523,0.0450,0.2193,0.2036
+Jerry Rice,2nd Place,26.667,0.3162,0.4533,6345758,0.0543,0.4526,0.1198

@@ -1,0 +1,165 @@
+% Model II: Macro-Comparative Analysis of Aggragation Rules
+\section{Model II: Macro-Comparative Analysis of Aggregation Rules}
+
+\subsection{Problem Formulation and Simulation Framework}
+Having reconstructed the latent fan voting distribution $\hat{\mathbf{S}}_t$ in Model I, we proceed to the second phase of our study: a rigorous, counterfactual evaluation of the competition's aggregation rules. Throughout the history of \textit{Dancing with the Stars}, two distinct scoring systems have been employed:
+\begin{itemize}
+    \item \textbf{Rank-based System (Scenario A):} Used in Seasons 1-2 and 28+. Utilizing the sum of ranks ($\min [R_J + R_F]$).
+    \item \textbf{Percent-based System (Scenario B):} Used in Seasons 3-27. Utilizing the sum of shares ($\max [P_J + P_F]$).
+\end{itemize}
+
+The objective of Model II is to quantify the intrinsic bias of these rules. specifically, we ask: \textit{Which rule possesses a higher "Fan-Friendliness," i.e., a lower deviation from the pure popular vote?}
+
+\subsubsection{Data Standardization and Dual-Track Simulation}
+To conduct a fair cross-season comparison, we establish a **Dual-Track Counterfactual Simulation** framework. For every week $w$ in every season $s$, we construct two parallel universes, holding the contestants' performance (Judge Scores $\mathbf{J}$) and popularity (Estimated Fan Votes $\hat{\mathbf{S}}$) constant, while varying only the aggregation rule.
+
+\textbf{Standardization for Comparability:}
+Since "Ranks" and "Percentages" exist in different vector spaces, we map all percentages to the rank domain. Let $\mathbf{P}_{F,t}$ be the estimated fan vote share vector for week $t$. The implied Fan Rank $\mathbf{R}_{F,t}$ is derived as:
+\begin{equation}
+    \mathbf{R}_{F,t} = \text{Rank}(-\mathbf{P}_{F,t})
+\end{equation}
+where rank 1 corresponds to the highest vote share.
+
+\textbf{Simulation Tracks:}
+\begin{itemize}
+    \item \textbf{Universe A (Mandatory Rank):} We compute the composite score $S_{A,i} = R_{J,i} + R_{F,i}$. The simulated final ranking $\mathbf{R}_{final, A}$ is the rank of these sums (ascending).
+    \item \textbf{Universe B (Mandatory Percent):} We compute the composite score $S_{B,i} = P_{J,i} + P_{F,i}$. The simulated final ranking $\mathbf{R}_{final, B}$ is the rank of these sums (descending).
+\end{itemize}
+
+\subsection{Quantifying Bias: The Fan Deviation Index (FDI)}
+We introduce the \textbf{Fan Deviation Index (FDI)} to measure the mechanism-induced distortion of the public will. FDI is defined as the normalized Manhattan distance between the rule-generated outcome and the pure fan preference.
+
+For a specific rule $k \in \{Rank, Percent\}$ at week $w$ with $N_w$ contestants:
+\begin{equation}
+    \text{FDI}_k^{(w)} = \frac{1}{N_w} \sum_{i=1}^{N_w} \left| R_{final, k, i} - R_{F, i} \right|
+\end{equation}
+
+\begin{itemize}
+    \item Low FDI ($\to 0$): The rule faithfully reflects fan voting (Fan-Friendly).
+    \item High FDI: The rule allows judge scores to significantly override fan votes (Judge-Dominant).
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{model2_imgs/Task2_Subtask1_Boxplot.png}
+    \caption{Distribution of Fan Deviation Index (FDI) for Rank-based and Percent-based rules. The Percent-based rule (Right) consistently shows lower FDI values, indicating it is mathematically more driven by fan voting variance.}
+    \label{fig:fdi_boxplot}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{model2_imgs/Task2_Subtask1_BarChart.png}
+    \caption{Weekly Comparison of Fan Deviation Index. In the majority of weeks, the Percent-based system yields a result closer to the pure fan vote ($\Delta > 0$).}
+    \label{fig:fdi_barchart}
+\end{figure}
+
+\subsubsection{Results: The Variance Suppression Hypothesis}
+We computed $\Delta = \text{FDI}_{Rank} - \text{FDI}_{Percent}$ across all 34 seasons.
+\begin{itemize}
+    \item \textbf{Observation:} In \textbf{83\%} of simulated weeks, $\Delta > 0$, implying $\text{FDI}_{Percent} < \text{FDI}_{Rank}$.
+    \item \textbf{Interpretation:} The Percent-based system is structurally more "Fan-Friendly."
+    \item \textbf{Mechanism:} This phenomenon arises from \textbf{Variance Mismatch}. Judge scores typically cluster in a narrow range (e.g., 7 to 9), whereas fan votes often exhibit extreme skew (e.g., one star getting 40\% while others get 5\%). In a summation $P_J + P_F$, the term with higher variance ($P_F$) mathematically dominates the sum. In contrast, the Rank system forces a uniform distribution (1, 2, ..., N) on both components, enforcing a strict 50-50 power sharing, which effectively "suppresses" the dominance of a super-popular celebrity.
+\end{itemize}
+
+\section{Sensitivity Analysis and Policy Optimization}
+
+\subsection{Mechanism Stress Test: Analysis of "Controversial Survivors"}
+To rigorously test the robustness of competition rules, we examine extreme edge cases—"Low-Score Survivors"—who historically sparked controversy by advancing despite poor technical scores. We selected four representative cases: Jerry Rice (S2), Billy Ray Cyrus (S4), Bristol Palin (S11), and Bobby Bones (S27).
+
+We simulated their survival under four distinct regulatory combinations:
+\begin{enumerate}
+    \item \textbf{Rank Only:} Classic S1/S2 rules.
+    \item \textbf{Percent Only:} Classic S3-S27 rules.
+    \item \textbf{Rank + Judges' Save:} New S28+ rules (Bottom 2 veto).
+    \item \textbf{Percent + Judges' Save:} Hypothetical hybrid.
+\end{enumerate}
+
+\textbf{Reversal Detection Logic:}
+We define a \textbf{DANGER} state if a contestant who historically survived ($R_{actual} = \text{Safe}$) would have been eliminated under the simulated rule ($R_{sim} = \text{Eliminated}$).
+
+\textbf{Key Findings: The "Rank + Save" Correction Effect}
+The simulation results across all four controversial cases consistently point to the same mechanism of correction. As illustrated in Figure \ref{fig:combined_timelines}, the introduction of the \textbf{Rank + Judges' Save} rule effectively neutralizes the "popularity shield" that protected these low-scoring contestants in history.
+\begin{itemize}
+    \item \textbf{Early Intervention:} For Bristol Palin (S11) and Billy Ray Cyrus (S4), the hypothetical "Rank + Save" rule triggers a \textbf{DANGER} status (red block) significantly earlier than their actual elimination. This confirms that the mechanics of the Rank system, combined with a safety valve for skilled dancers, would have prevented these "unjust" advancements.
+    \item \textbf{Preventing Anomalous Wins:} In the case of Bobby Bones (S27), who won under the Percent system, the Rank-based system effectively caps his fan vote advantage. Our simulation shows he would have faced elimination risks in the finals, potentially altering the championship outcome to a more technically proficient couple.
+\end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+    % Row 1: The two Bristol Palin cases
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{model2_imgs/Task2_Subtask2_Timeline_Bristol_Palin_S11.png}
+        \subcaption{Bristol Palin (S11)}
+    \end{minipage}\hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{model2_imgs/Task2_Subtask2_Timeline_Bristol_Palin_S15.png}
+        \subcaption{Bristol Palin (S15)}
+    \end{minipage}
+
+    \vspace{0.5cm} % Spacing between rows
+
+    % Row 2: The other three cases (Jerry, Billy, Bobby)
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{model2_imgs/Task2_Subtask2_Timeline_Jerry_Rice_S2.png}
+        \subcaption{Jerry Rice (S2)}
+    \end{minipage}\hfill
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{model2_imgs/Task2_Subtask2_Timeline_Billy_Ray_Cyrus_S4.png}
+        \subcaption{Billy Ray Cyrus (S4)}
+    \end{minipage}\hfill
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{model2_imgs/Task2_Subtask2_Timeline_Bobby_Bones_S27.png}
+        \subcaption{Bobby Bones (S27)}
+    \end{minipage}
+
+    \caption{Combined Counterfactual Survival Timelines. The Red blocks ("Eliminated") appearing in the "Rank + Save" rows (and Rank Rule) indicate where the historical outcome of "Safe" (Green) would have been overturned. This demonstrates the proposed rule's ability to filter out low-scoring survivors earlier in the competition.}
+    \label{fig:combined_timelines}
+\end{figure}
+
+\subsection{Multi-Objective Evaluation System}
+We construct a tri-dimensional metric system to evaluate the overall quality of a competition format:
+
+\begin{enumerate}
+    \item \textbf{Fairness Index ($I_{fair}$):} Spearman correlation between Final Rank and Judge Rank. Measures professional integrity.
+          \begin{equation}
+              I_{fair} = \rho(\mathbf{R}_{final}, \mathbf{R}_{judge})
+          \end{equation}
+    \item \textbf{Fan Satisfaction Index ($I_{fan}$):} Spearman correlation between Final Rank and Fan Rank. Measures entertainment value.
+          \begin{equation}
+              I_{fan} = \rho(\mathbf{R}_{final}, \mathbf{R}_{fan})
+          \end{equation}
+    \item \textbf{Extreme Risk Rate ($R_{risk}$):} The probability of a "System Failure", defined as the elimination of the absolute best dancer (Judge Rank 1) or the absolute crowd favorite (Fan Rank 1).
+\end{enumerate}
+
+\subsection{Policy Recommendation}
+We propose a weighted composite score $S(\alpha)$ to simulate different policy preferences, where $\alpha$ is the weight assigned to Fan Satisfaction:
+\begin{equation}
+    S(\alpha) = (1 - \alpha) \cdot I_{fair} + \alpha \cdot I_{fan} - \lambda \cdot R_{risk}
+\end{equation}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{model2_imgs/Task2_Subtask3_Sensitivity.png}
+    \caption{Sensitivity Analysis of Competition Formats. The "Rank + Save" system (Orange Line) maintains the highest composite score across the "Balanced Zone" ($0.4 < \alpha < 0.6$), proving it is the most robust compromise between fairness and popularity.}
+    \label{fig:sensitivity}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{model2_imgs/Task2_Subtask3_Risk.png}
+    \caption{Extreme Risk Analysis. The "Rank + Save" mechanism has the lowest probability of eliminating the best dancer (Professional Collapse), while Percent-based systems carry a significantly higher risk of such anomalies.}
+    \label{fig:risk}
+\end{figure}
+
+\textbf{Conclusion & Recommendation:}
+\begin{itemize}
+    \item The \textbf{Rank-Based System} is superior for competitive equity. It normalizes the high variance of fan votes, preventing a single viral star from breaking the game mechanics.
+    \item The \textbf{Judges' Save} is an essential safety valve. Our simulations show it reduces the $R_{risk}$ (elimination of talent) by 35\% without significantly harming fan satisfaction.
+\end{itemize}
+
+\textbf{Final Verdict:} We strongly recommend the adoption of the \textbf{Rank-Based System with Judges' Save} (the current S28+ format) as the Pareto-optimal solution for future seasons.
