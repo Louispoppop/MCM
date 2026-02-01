@@ -39,17 +39,18 @@ For a specific rule $k \in \{Rank, Percent\}$ at week $w$ with $N_w$ contestants
 \end{itemize}
 
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\linewidth]{model3_imgs/Task2_Subtask1_Boxplot.png}
-    \caption{Distribution of Fan Deviation Index (FDI) for Rank-based and Percent-based rules. The Percent-based rule (Right) consistently shows lower FDI values, indicating it is mathematically more driven by fan voting variance.}
-    \label{fig:fdi_boxplot}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\linewidth]{model3_imgs/Task2_Subtask1_BarChart.png}
-    \caption{Weekly Comparison of Fan Deviation Index. In the majority of weeks, the Percent-based system yields a result closer to the pure fan vote ($\Delta > 0$).}
-    \label{fig:fdi_barchart}
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{model3_imgs/Task2_Subtask1_Boxplot.png}
+        \caption{Distribution of Fan Deviation Index (FDI) for Rank-based and Percent-based rules. The Percent-based rule (Right) consistently shows lower FDI values, indicating it is mathematically more driven by fan voting variance.}
+        \label{fig:fdi_boxplot}
+    \end{minipage}\hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{model3_imgs/Task2_Subtask1_BarChart.png}
+        \caption{Weekly Comparison of Fan Deviation Index. In the majority of weeks, the Percent-based system yields a result closer to the pure fan vote ($\Delta > 0$).}
+        \label{fig:fdi_barchart}
+    \end{minipage}
 \end{figure}
 
 \subsubsection{Results: The Variance Suppression Hypothesis}
@@ -96,9 +97,9 @@ The simulation results across all four controversial cases consistently point to
         \includegraphics[width=\linewidth]{model3_imgs/Task2_Subtask2_Timeline_Bristol_Palin_S15.png}
         \subcaption{Bristol Palin (S15)}
     \end{minipage}
-    
+
     \vspace{0.5cm} % Spacing between rows
-    
+
     % Row 2: The other three cases (Jerry, Billy, Bobby)
     \begin{minipage}{0.32\textwidth}
         \centering
@@ -115,7 +116,7 @@ The simulation results across all four controversial cases consistently point to
         \includegraphics[width=\linewidth]{model3_imgs/Task2_Subtask2_Timeline_Bobby_Bones_S27.png}
         \subcaption{Bobby Bones (S27)}
     \end{minipage}
-    
+
     \caption{Combined Counterfactual Survival Timelines. The Red blocks ("Eliminated") appearing in the "Rank + Save" rows (and Rank Rule) indicate where the historical outcome of "Safe" (Green) would have been overturned. This demonstrates the proposed rule's ability to filter out low-scoring survivors earlier in the competition.}
     \label{fig:combined_timelines}
 \end{figure}
@@ -137,23 +138,27 @@ We construct a tri-dimensional metric system to evaluate the overall quality of 
 
 \subsection{Policy Recommendation}
 We propose a weighted composite score $S(\alpha)$ to simulate different policy preferences, where $\alpha$ is the weight assigned to Fan Satisfaction:
-\begin{equation}
+ \begin{equation}
     S(\alpha) = (1 - \alpha) \cdot I_{fair} + \alpha \cdot I_{fan} - \lambda \cdot R_{risk}
 \end{equation}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\linewidth]{model3_imgs/Task2_Subtask3_Sensitivity.png}
-    \caption{Sensitivity Analysis of Competition Formats. The "Rank + Save" system (Orange Line) maintains the highest composite score across the "Balanced Zone" ($0.4 < \alpha < 0.6$), proving it is the most robust compromise between fairness and popularity.}
-    \label{fig:sensitivity}
-\end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\linewidth]{model3_imgs/Task2_Subtask3_Risk.png}
-    \caption{Extreme Risk Analysis. The "Rank + Save" mechanism has the lowest probability of eliminating the best dancer (Professional Collapse), while Percent-based systems carry a significantly higher risk of such anomalies.}
-    \label{fig:risk}
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{model3_imgs/Task2_Subtask3_Sensitivity.png}
+        \caption{Sensitivity Analysis of Competition Formats. The "Rank + Save" system (Orange Line) maintains the highest composite score across the "Balanced Zone" ($0.4 < \alpha < 0.6$), proving it is the most robust compromise between fairness and popularity.}
+        \label{fig:sensitivity_analysis}
+    \end{minipage}\hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{model3_imgs/Task2_Subtask3_Risk.png}
+        \caption{Extreme Risk Analysis. The "Rank + Save" mechanism has the lowest probability of eliminating the best dancer (Professional Collapse), while Percent-based systems carry a significantly higher risk of such anomalies.}
+        \label{fig:risk_analysis}
+    \end{minipage}
 \end{figure}
+
 
 \textbf{Conclusion \& Recommendation:}
 \begin{itemize}

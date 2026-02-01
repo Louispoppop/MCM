@@ -91,18 +91,18 @@ We evaluate performance using \textbf{RMSE} (Root Mean Square Error) and $\mathb
 Table \ref{tab:model_results} shows the performance of our models. The Fan Vote model achieves an exceptionally high $R^2$ of 0.988, confirming that pre-existing popularity is the dominant driver of fan voting.
 
 \begin{table}[h]
-\centering
-\caption{Model Performance Metrics (Chronological Split)}
-\label{tab:model_results}
-\begin{tabular}{lcccc}
-\toprule
-\textbf{Target} & \textbf{Train RMSE} & \textbf{Test RMSE} & \textbf{Train $R^2$} & \textbf{Test $R^2$} \\
-\midrule
-Judge Score Rate & 0.082 & 0.104 & 0.608 & 0.439 \\
-Fan Vote Share & 0.010 & 0.007 & 0.988 & 0.988 \\
-Placement Encoded & 0.194 & 0.236 & 0.547 & 0.312 \\
-\bottomrule
-\end{tabular}
+    \centering
+    \caption{Model Performance Metrics (Chronological Split)}
+    \label{tab:model_results}
+    \begin{tabular}{lcccc}
+        \toprule
+        \textbf{Target}   & \textbf{Train RMSE} & \textbf{Test RMSE} & \textbf{Train $R^2$} & \textbf{Test $R^2$} \\
+        \midrule
+        Judge Score Rate  & 0.082               & 0.104              & 0.608                & 0.439               \\
+        Fan Vote Share    & 0.010               & 0.007              & 0.988                & 0.988               \\
+        Placement Encoded & 0.194               & 0.236              & 0.547                & 0.312               \\
+        \bottomrule
+    \end{tabular}
 \end{table}
 
 \subsubsection{Analysis of Characteristics on Contestant Success}
