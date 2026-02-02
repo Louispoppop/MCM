@@ -9,10 +9,15 @@ titlepage = false, abstract = true}
 \usepackage{algorithmicx}
 \usepackage{algpseudocode}
 \usepackage{tocloft}
+\usepackage{enumitem}
+
 \tocloftpagestyle{fancy}
 \setlength{\cftbeforesecskip}{2pt}      % section 前间距
 \setlength{\cftbeforesubsecskip}{1pt}   % subsection 前间距
 \setlength{\cftparskip}{0pt}  
+\setlist[itemize]{topsep=0pt, parsep=0pt, partopsep=0pt} % 全局去除 itemize 顶部间距
+\setlist[enumerate]{topsep=0pt, parsep=0pt, partopsep=0pt} % 全局去除 enumerate 顶部间距
+
 %四款字体可以选择
 \usepackage{times}
 %\usepackage{newtxtext}
@@ -28,7 +33,7 @@ titlepage = false, abstract = true}
 % 调整页眉高度，消除 fancyhdr 的 \headheight too small 警告
 \setlength{\headheight}{14pt}
 
-\title{The Rhythm of Reason: Decrypting the "Black Box" of Fan Voting and Optimizing the \textit{Dancing with the Stars} Ecosystem}
+\title{The Invisible Public Will: Evaluation and Adaptive Optimization of Voting Mechanisms Based on DWTS}
 
 \begin{document}
 \input{abstract}
@@ -40,10 +45,13 @@ titlepage = false, abstract = true}
 \newpage
 \input{introduction}
 
+\newpage
 \input{assumptions}
 
+\newpage
 \input{notations}
 
+\newpage
 \input{model1}
 
 \input{model2}
@@ -52,15 +60,14 @@ titlepage = false, abstract = true}
 
 \input{model4}
 
+\input{model_evaluation_and_promotion}
+
 \newpage
 \input{memo}
 
-\input{model_evaluation_and_promotion}
-
-\input{conclusions}
-
 \newpage
 \input{references}
+
 \newpage
 \input{AI}
 
