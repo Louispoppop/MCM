@@ -2,7 +2,7 @@
 
 \subsection{Feature Interpretation and Engineering}
 To analyze the impact of various characteristics, we categorize and encode the available data. 
-There are five key features serve as celebrity characteristics: industry, age, nationality, professional partner strength, and base popularity. 
+There are five key features serve as celebrity characteristics: industry, age, nationality, professional partner strength, and base popularity~\cite{oconnor2018amazon}. 
 
 \subsubsection{Industry \& Age \& Nationality}
 We process the three demographic features, figure \ref{fig:characteristics_dist} illustrates the distributions of the three demographic features among contestants.
@@ -89,8 +89,8 @@ Placement Encoded & 0.236 & 0.177 & 0.312 & 0.620 \\
 The analysis reveals varying predictiveness across different competition aspects:
 
 \begin{itemize}
-    \item \textbf{Fan Vote Share:} Both models achieve near-perfect $R^2$ ($\approx 0.99$). This consistency confirms that pre-existing popularity is the overwhelming, time-invariant driver of fan decisions~\cite{gershman2012teaching}.
-    \item \textbf{Judge Score Rate:} Judges adhere to relatively objective standards, yet static celebrity profiles cannot account for dynamic technical execution or stage accidents, limiting the initial fit. However, the performance improvement in the Odd-Even split indicates that with sufficiently comprehensive training data, the model successfully identifies the fixed baseline of scoring potential. This validates our design: despite random performance variance, the impact of characteristics on judge perception is stable and learnable.
+    \item \textbf{Fan Vote Share:} Both models achieve near-perfect $R^2$ ($\approx 0.99$). This consistency confirms that pre-existing popularity is the overwhelming, time-invariant driver of fan decisions~\cite{gershman2012teaching,wade2014dancing}.
+    \item \textbf{Judge Score Rate:} Judges adhere to relatively objective standards; yet, static celebrity profiles cannot account for dynamic technical execution or stage accidents, limiting the initial fit. However, the performance improvement in the Odd-Even split indicates that with sufficiently comprehensive training data, the model successfully identifies the fixed baseline of scoring potential. This validates our design: despite random performance variance, the impact of characteristics on judge perception is stable and learnable.
     \item \textbf{Placement Encoded:} Modeling final placement is significantly harder than scoring due to the inherent randomness of elimination. The dramatic leap in the Odd-Even split ($R^2=0.312 \to 0.620$) serves as strong evidence for our feature selection. It suggests that the Chronological split fails to generalize to new "types" of contestants. In contrast, the Odd-Even split ensures that if a contestant profile (e.g., Person A in Season 8) appears in the training set, a similar profile (e.g., Person A returning or a similar one in Season 15) in the test set can be accurately predicted. This confirms that when the data distribution is fully covered, our features are highly effective predictors of success.
 \end{itemize}
 

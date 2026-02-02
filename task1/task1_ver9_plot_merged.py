@@ -249,29 +249,33 @@ def plot_season2_final_pie(df):
         max_idx = np.argmax(vals)
         return [0.05 if i == max_idx else 0.0 for i in range(len(vals))]
 
-    fig, axes = plt.subplots(1, 2, figsize=(14, 7))
+    # Modified: Reduced height from 10 to 8.5 to reduce vertical whitespace
+    fig, axes = plt.subplots(1, 2, figsize=(18, 8))
 
     # Judge Pie
     wedges, texts, autotexts = axes[0].pie(
         judge_shares, labels=names, autopct='%1.1f%%', startangle=90,
         explode=get_explode(judge_shares), colors=c_map,
-        wedgeprops=dict(edgecolor='w', width=1), textprops={'fontsize': 11}
+        wedgeprops=dict(edgecolor='w', width=1), textprops={'fontsize': 22}
     )
-    axes[0].set_title('Judge Score Distribution (Finals)',
-                      fontsize=14, fontweight='bold')
+    axes[0].set_title('Judge Score Distribution',
+                      fontsize=26, fontweight='bold')
 
     # Vote Pie
     wedges, texts, autotexts = axes[1].pie(
         vote_shares, labels=names, autopct='%1.1f%%', startangle=90,
         explode=get_explode(vote_shares), colors=c_map,
-        wedgeprops=dict(edgecolor='w', width=1), textprops={'fontsize': 11}
+        wedgeprops=dict(edgecolor='w', width=1), textprops={'fontsize': 22}
     )
-    axes[1].set_title('Estimated Fan Vote Distribution (Finals)',
-                      fontsize=14, fontweight='bold')
+    axes[1].set_title('Estimated Fan Vote Distribution',
+                      fontsize=26, fontweight='bold')
 
-    fig.suptitle('Season 2 Finals: Technical Scores vs. Fan Popularity',
-                 fontsize=18, fontweight='bold')
-    plt.tight_layout()
+    # Modified: Lowered y to 0.92 (closer to charts) and added rect to tight_layout
+    fig.suptitle('Season 2 Finals: Technical Scores or Fan Popularity?',
+                 fontsize=32, fontweight='bold', y=0.92)
+
+    # rect=[left, bottom, right, top] - Limits subplots to bottom 88% of figure
+    plt.tight_layout(rect=[0, 0.02, 1, 0.88])
 
     out_path = os.path.join(BASE_DIR, 'season2_final_pie.png')
     plt.savefig(out_path, dpi=300)

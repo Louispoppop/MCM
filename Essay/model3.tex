@@ -63,7 +63,7 @@ Positive $\Delta$ values indicate the Percent-based system yields results closer
     \begin{minipage}{0.48\textwidth}
         \centering
         \includegraphics[width=\linewidth]{model3_imgs/Task2_Subtask1_Boxplot.png}
-        \caption{Distribution of Fan Deviation Index (FDI)}
+        \caption{Distribution Box Plot of FDI}
         \label{fig:fdi_boxplot}
     \end{minipage}\hfill
     \begin{minipage}{0.48\textwidth}
@@ -89,7 +89,7 @@ effectively suppressing the "superstar effect" and restoring equal power to the 
 \subsection{Mechanism Analysis}
 To evaluate the robustness of these systems against extreme anomalies,
 we examine historical "Low-Score Survivors"—contestants who advanced
-despite poor technical performance, often sparking controversy.
+despite poor technical performance, often sparking controversy~\cite{wade2014dancing}.
 We selected four representative cases:
 Jerry Rice (S2), Billy Ray Cyrus (S4), Bristol Palin (S11,S15), and Bobby Bones (S27).
 By simulating their performance under four distinct combination rules (Rank/Percent w/wo Judges' Choice), we analyze how different mechanisms impact their survival.
@@ -107,13 +107,13 @@ different mechanisms exhibit varying results for these contestants:
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{model3_imgs/Task2_Subtask2_Timeline_2plus3.png}
-    \caption{Survival Timelines of Controversial Contestants. The ``Rank + Choice'' mechanism (labeled as ``Rank + Save'' in figures) shows early interception.}
+    \caption{Survival Timelines of Controversial Contestants}
     \label{fig:combined_timelines}
 \end{figure}
 
 Our analysis demonstrates that the \textbf{Rank-based System with Judges' Choice} can effectively
 screen out controversial contestants with insufficient dance skills and
-improve overall fairness.
+improve overall ~\cite{dehnart2010audience}.
 The "Choice" mechanism provides a final safeguard,
 allowing judges to elect the superior dancer
 when technically weaker contestants land in the bottom two,
@@ -155,7 +155,7 @@ to represent the show producers' strategic trade-off:
 The parameter $\alpha$ could describe the show's identity:
 \begin{itemize}
     \item $\alpha \to 0 / 1$: Prioritizes Technical skills (0) / Popularity (1).
-    \item $\alpha \in [0.4, 0.6]$: The ``Balanced Zone'', is ideal for a commercial TV show that requires both high performance quality and viewer engagement.
+    \item $\alpha \in [0.4, 0.6]$: The "Balanced Zone", is ideal for a commercial TV show that requires both high performance quality and viewer engagement~\cite{goldderby2019democracy}.
 \end{itemize}
 
 \begin{figure}[H]

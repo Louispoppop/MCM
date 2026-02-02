@@ -16,7 +16,8 @@ plt.rcParams['font.sans-serif'] = ['Arial']
 plt.rcParams['axes.unicode_minus'] = False
 
 # 标题字体配置
-title_font = {'fontname': 'Times New Roman', 'fontweight': 'bold'}
+title_font = {'fontname': 'Arial'}
+# , 'fontweight': 'bold'}
 
 # ----------------------------------------------------------
 # 分任务 1：规则对比与粉丝偏好分析 (含可视化)
@@ -104,7 +105,7 @@ def task2_subtask1_rules_comparison(file_path):
         facecolor='white', alpha=0.7, edgecolor='none'))
 
     plt.title('Distribution of Fan Deviation Index (FDI)',
-              fontsize=16, **title_font)
+              fontsize=24, **title_font)
     plt.ylabel('Normalized Deviation (Lower is Better)')
     plt.savefig('Task2_Subtask1_Boxplot.png', dpi=300)
     plt.close()
@@ -120,8 +121,8 @@ def task2_subtask1_rules_comparison(file_path):
 
     bars = plt.bar(win_counts.index, win_counts.values, color=colors_to_use)
 
-    plt.title('Winning Counts: Which Rule follows Fan Preference more often?',
-              fontsize=16, **title_font)
+    plt.title('Weekly Winner Counts of FDI',
+              fontsize=24, **title_font)
     plt.ylabel('Number of Weeks')
     for bar in bars:
         plt.text(bar.get_x() + bar.get_width()/2., bar.get_height(),
@@ -295,8 +296,9 @@ def task2_subtask2_visualize_timelines(csv_path='Task2_Controversial_Analysis.cs
 
     # 2. 创建 GridSpec 布局 (2行6列)
     # 第一行每图占3列 (共2图)，第二行每图占2列 (共3图)
-    fig = plt.figure(figsize=(24, 10), constrained_layout=True)
-    gs = fig.add_gridspec(2, 6)
+    # [修改] 调整高度比，让第一行不要太高（因为第二行是正方形会比较扁）
+    fig = plt.figure(figsize=(24, 11), constrained_layout=True)
+    gs = fig.add_gridspec(2, 6, height_ratios=[0.8, 1])
     axes = []
 
     # 分配 Axes
@@ -329,11 +331,14 @@ def task2_subtask2_visualize_timelines(csv_path='Task2_Controversial_Analysis.cs
     cmap = ListedColormap(["#66BB6A", '#FFCA28', '#EF5350', '#E0E0E0'])
     rules_order = ['ACTUAL', 'Sim_Rank', 'Sim_Rank_Save',
                    'Sim_Percent', 'Sim_Percent_Save']
-    rules_labels = ['Actual', 'Rank', 'Rank+Save',
-                    'Percent', 'Pct+Save']  # Shortened
+    rules_labels = ['Actual', 'Rank', 'Rank + Choice',
+                    'Percent', 'Pct + Choice']  # Shortened
 
     print(
         f" -> 正在绘制 {n_plots} 个子图 (Layout: {len(row1_items)} Top, {len(row2_items)} Bottom)...")
+
+    # [新增] 计算第一行实际绘制的子图数量 (用于判断何时显示Y轴标签)
+    n_row1 = min(len(row1_items), 2)
 
     for idx, ((celeb, season), celeb_data) in enumerate(final_items):
         if idx >= len(axes):
@@ -369,14 +374,22 @@ def task2_subtask2_visualize_timelines(csv_path='Task2_Controversial_Analysis.cs
         plot_matrix = np.array(plot_matrix)
 
         # 绘图 Heatmap
+        # [修改] 第一行允许拉伸(长方形)，第二行强制正方形
+        is_second_row = (idx >= n_row1)
         sns.heatmap(plot_matrix, ax=ax, cmap=cmap, linewidths=2, linecolor='white',
-                    cbar=False, vmin=0, vmax=3, annot=False)
+                    cbar=False, vmin=0, vmax=3, annot=False, square=is_second_row)
 
         # 坐标轴与标签设置
         ax.set_xticklabels(weeks_labels, rotation=0,
                            fontsize=12, fontweight='bold')
-        ax.set_yticklabels(rules_labels, rotation=0,
-                           fontsize=12, fontweight='bold')
+
+        # [修改] 仅在每行最左侧图显示标签
+        is_leftmost = (idx == 0) or (idx == n_row1)
+        if is_leftmost:
+            ax.set_yticklabels(rules_labels, rotation=0,
+                               fontsize=12, fontweight='bold')
+        else:
+            ax.set_yticks([])
 
         # 子标题 (左对齐)
         ax.set_title(f'{celeb} (S{season})', fontsize=16,
@@ -385,7 +398,7 @@ def task2_subtask2_visualize_timelines(csv_path='Task2_Controversial_Analysis.cs
     # 统一总图例 (放置在底部)
     legend_handles = [
         Patch(facecolor="#66BB6A", edgecolor='white', label='Safe / Finalist'),
-        Patch(facecolor='#FFCA28', edgecolor='white', label='Saved by Judges'),
+        Patch(facecolor='#FFCA28', edgecolor='white', label='Rescued by Judges'),
         Patch(facecolor="#EF5350", edgecolor='white', label='Eliminated'),
         Patch(facecolor='#E0E0E0', edgecolor='white',
               label='Absent (Already Eliminated)')
@@ -396,8 +409,9 @@ def task2_subtask2_visualize_timelines(csv_path='Task2_Controversial_Analysis.cs
                ncol=4, frameon=False, fontsize=16, borderpad=1)
 
     # 调整顶部标题
+    # [修改] 增加 y 值以避免重叠
     fig.suptitle('Counterfactual Survival Analysis: Judge Save Impact',
-                 fontsize=24, y=1.03, **title_font)
+                 fontsize=32, y=1.08, **title_font)
 
     out_path = 'Task2_Subtask2_Timeline_2plus3.png'
     # 使用 bbox_inches='tight' 确保图例不被裁剪
@@ -500,7 +514,7 @@ def task2_subtask3_advanced_evaluation(file_path):
 def task2_subtask3_visualizations(sens_df, risk_df):
     print("\n>>> 正在生成分任务 3 的可视化图表...")
 
-    # [样式修复] 重置 Subtask 2 的全局粗体设置，避免刻度太粗太傻
+    # [样式修复] 重置 Subtask 2 的全局粗体设置
     plt.rcParams['font.weight'] = 'normal'
     plt.rcParams['axes.labelweight'] = 'normal'
     plt.rcParams['axes.titleweight'] = 'normal'
@@ -512,16 +526,27 @@ def task2_subtask3_visualizations(sens_df, risk_df):
     styles = {
         'Rank': {'color': '#3E7CD8', 'marker': 'o', 'ls': '-'},
         'Percent': {'color': '#EE4D7A', 'marker': 's', 'ls': '-'},
-        'Rank+Save': {'color': '#3E7CD8', 'marker': '^', 'ls': '--'},
-        'Percent+Save': {'color': '#EE4D7A', 'marker': 'D', 'ls': '--'}
+        'Rank + Choice': {'color': '#3E7CD8', 'marker': '^', 'ls': '--'},
+        'Percent + Choice': {'color': '#EE4D7A', 'marker': 'D', 'ls': '--'}
     }
 
-    for rule in ['Rank', 'Percent', 'Rank+Save', 'Percent+Save']:
-        plt.plot(sens_df['Fan_Weight'], sens_df[f'Score_{rule}'],
-                 label=rule,
-                 color=styles[rule]['color'],
-                 marker=styles[rule]['marker'],
-                 linestyle=styles[rule]['ls'],
+    # 映射表：图表显示名称 -> DataFrame列名后缀
+    name_map = {
+        'Rank': 'Rank',
+        'Percent': 'Percent',
+        'Rank + Choice': 'Rank+Save',
+        'Percent + Choice': 'Percent+Save'
+    }
+
+    for display_name, col_suffix in name_map.items():
+        if f'Score_{col_suffix}' not in sens_df.columns:
+            continue
+
+        plt.plot(sens_df['Fan_Weight'], sens_df[f'Score_{col_suffix}'],
+                 label=display_name,
+                 color=styles[display_name]['color'],
+                 marker=styles[display_name]['marker'],
+                 linestyle=styles[display_name]['ls'],
                  linewidth=2)
 
     plt.title('Sensitivity Analysis: Composite Score vs Fan Weight',
@@ -549,9 +574,15 @@ def task2_subtask3_visualizations(sens_df, risk_df):
               fontsize=20, **title_font)
     plt.xlabel('Rule System', fontsize=14)
     plt.ylabel('Risk (Percentage)', fontsize=14)
-    labels = risk_df['Rule'].values
-    plt.xticks(x, labels, fontsize=15)
-    plt.yticks(fontsize=15)
+
+    # 替换 X 轴标签以匹配术语
+    labels = risk_df['Rule'].replace({
+        'Rank+Save': 'Rank + Choice',
+        'Percent+Save': 'Percent + Choice'
+    }).values
+
+    plt.xticks(x, labels, fontsize=13)
+    plt.yticks(fontsize=13)
     ax = plt.gca()
     ax.yaxis.set_major_formatter(mtick.PercentFormatter(1.0))
     max_val = risk_df[['Judge Risk', 'Fan Risk']].max().max()
