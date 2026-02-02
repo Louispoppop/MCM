@@ -36,6 +36,12 @@ The core symbols and their definitions used in this study are summarized in Tabl
         $I_{fair}$           & Fairness Index (Judge Correlation)                 & Spearman $\rho(\mathbf{R}_{final}, \mathbf{J})$              \\
         $R_{risk}$           & Probability of System Failure                      & $P(\text{Best Eliminated})$                                  \\
         $S(\alpha)$          & Policy Optimization Score                          & Weighted objective function                                  \\
+        \midrule
+        \multicolumn{3}{l}{\textbf{Model IV Variables}}                                                                                          \\
+        $S(x)$               & Adaptive Effective Score (Sigmoid)                 & $S(x) \in (0,1)$                                             \\
+        $c$                  & Baseline Performance Threshold (Center)            & Constant                                                     \\
+        $K$                  & Sensitivity Slope Parameter                        & $K_{base} + \alpha/\sigma_{votes}$                           \\
+        $\sigma_{votes}$     & Standard Deviation of Fan Vote Distributions       & Variance Metric                                              \\
         \bottomrule
     \end{tabular}
     \label{table:variables}
