@@ -6,7 +6,13 @@ import numpy as np
 
 # ==================== Configuration & Style ====================
 plt.style.use('seaborn-v0_8-whitegrid')
-sns.set_context("paper", font_scale=1.4)
+# Use "talk" context for larger text, ideal for papers/presentations
+sns.set_context("talk", font_scale=1.1)
+# Enforce global bold fonts for better readability
+plt.rcParams['font.weight'] = 'bold'
+plt.rcParams['axes.labelweight'] = 'bold'
+plt.rcParams['axes.titleweight'] = 'bold'
+plt.rcParams['figure.titleweight'] = 'bold'
 
 # Color Palette
 COLOR_SAFE = "#3e7cd8"      # Blue
@@ -16,7 +22,7 @@ COLOR_DREW = "#3e7cd8"      # Blue for Drew (winner)
 COLOR_PURPLE = "#9C86DA"    # Purple for others
 
 # Output Directory
-BASE_DIR = r'd:\美赛'
+BASE_DIR = r'C:\Users\Xiangkun\MCM\task1'
 DATA_FILE = os.path.join(BASE_DIR, 'task1_ultimate_estimates.csv')
 
 
@@ -35,31 +41,58 @@ def load_and_prep_data():
 
     return df
 
-# ==================== Plot 1: Global CV Distribution ====================
+# ==================== Plot 1: Season 2 Specific CV Evolution ====================
 
 
-def plot_cv_distribution(df):
-    plt.figure(figsize=(10, 6))
+def plot_cv_time_evolution(df):
+    plt.figure(figsize=(11, 7))  # Slightly larger figure
 
-    # Filter reasonable range for visibility
-    plot_data = df['cv'].dropna()
-    # Remove extreme outliers for plot clarity
-    plot_data = plot_data[plot_data < 2.0]
+    # 1. Filter Season 2
+    s2_df = df[df['season'] == 2].copy()
 
-    sns.histplot(plot_data, bins=50, kde=True, color=COLOR_SAFE, alpha=0.6)
+    # 2. Select Targets
+    targets = ['Jerry Rice', 'Drew Lachey', 'Stacy Keibler']
+    s2_df = s2_df[s2_df['celebrity_name'].isin(targets)]
 
-    mean_cv = df['cv'].mean()
-    plt.axvline(mean_cv, color=COLOR_ELIM, linestyle='--',
-                linewidth=2, label=f'Mean CV: {mean_cv:.4f}')
+    if s2_df.empty:
+        print("Season 2 target data not found.")
+        return
 
-    plt.title('Distribution of Coefficient of Variation (Certainty) of Estimates',
-              fontsize=16, fontweight='bold')
-    plt.xlabel('Coefficient of Variation (CV)', fontsize=12)
-    plt.ylabel('Frequency (Number of Prediction Instances)', fontsize=12)
-    plt.legend()
+    # 3. Custom Palette
+    palette = {
+        'Jerry Rice': COLOR_JERRY,
+        'Drew Lachey': COLOR_DREW,
+        'Stacy Keibler': COLOR_PURPLE
+    }
+
+    # 4. Plot
+    sns.lineplot(
+        data=s2_df,
+        x='week',
+        y='cv',
+        hue='celebrity_name',
+        palette=palette,
+        linewidth=4.5,  # Thicker lines
+        marker='o',
+        markersize=11   # Larger markers
+    )
+
+    plt.title('Season 2: Estimation Uncertainty (CV) Evolution',
+              fontsize=20, pad=20)
+    plt.xlabel('Week Number', fontsize=16)
+    plt.ylabel(
+        'Coefficient of Variation (CV)', fontsize=16)
+
+    # Removed arrows as requested
+
+    plt.legend(title='Contestant', loc='upper right',
+               fontsize=14, title_fontsize=16)
+    plt.xticks(fontsize=14)
+    plt.yticks(fontsize=14)
+    plt.grid(True, linestyle='--', alpha=0.5)
     plt.tight_layout()
 
-    out_path = os.path.join(BASE_DIR, 'global_cv_distribution.png')
+    out_path = os.path.join(BASE_DIR, 'season2_cv_evolution.png')
     plt.savefig(out_path, dpi=300)
     print(f"Saved: {out_path}")
 
@@ -67,7 +100,7 @@ def plot_cv_distribution(df):
 
 
 def plot_global_correlation(df):
-    plt.figure(figsize=(12, 8))
+    plt.figure(figsize=(13, 9))
 
     # Create normalized judge score for better comparison (0-1 scale is abstract, keep raw score for familiarity)
     # But coloring by Elimination status
@@ -82,15 +115,18 @@ def plot_global_correlation(df):
         y='vote_share_est',
         hue='Status',
         palette={'Eliminated': COLOR_ELIM, 'Safe': COLOR_SAFE},
-        alpha=0.5,
-        s=60
+        alpha=0.6,
+        s=80  # Larger points
     )
 
     plt.title('Global Correlation: Judge Scores vs. Estimated Fan Vote Share',
-              fontsize=16, fontweight='bold')
-    plt.xlabel('Total Judge Score', fontsize=12)
-    plt.ylabel('Estimated Fan Vote Share', fontsize=12)
-    plt.legend(title='Outcome', loc='upper right')
+              fontsize=20, pad=20)
+    plt.xlabel('Total Judge Score', fontsize=16)
+    plt.ylabel('Estimated Fan Vote Share', fontsize=16)
+    plt.legend(title='Outcome', loc='upper right',
+               fontsize=14, title_fontsize=16)
+    plt.xticks(fontsize=14)
+    plt.yticks(fontsize=14)
 
     plt.tight_layout()
     out_path = os.path.join(BASE_DIR, 'ultimate_correlation.png')
@@ -122,7 +158,7 @@ def plot_jerry_rice_case(df):
                     'Drew Lachey'].set_index('week').reindex(weeks)
 
     # Setup Figure for Bar Chart
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 10), sharex=True)
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(13, 11), sharex=True)
 
     # --- Top: Judge Scores ---
     h1 = jerry_df['judge_score'].fillna(0)
@@ -135,13 +171,14 @@ def plot_jerry_rice_case(df):
 
     # Labels
     ax1.bar_label(rects1, padding=3, fmt='%.0f',
-                  fontsize=10, fontweight='bold')
+                  fontsize=14, fontweight='bold')
     ax1.bar_label(rects2, padding=3, fmt='%.0f',
-                  fontsize=10, fontweight='bold')
+                  fontsize=14, fontweight='bold')
 
-    ax1.set_ylabel('Judge Score')
-    ax1.set_title('Judge Scores Comparison', fontsize=14, fontweight='bold')
-    ax1.legend(loc='upper left')
+    ax1.set_ylabel('Judge Score', fontsize=16)
+    ax1.set_title('Judge Scores Comparison', fontsize=18, fontweight='bold')
+    ax1.legend(loc='upper left', fontsize=14)
+    ax1.tick_params(axis='y', labelsize=14)
     ax1.set_ylim(0, 35)
 
     # --- Bottom: Estimated Vote Share ---
@@ -155,20 +192,21 @@ def plot_jerry_rice_case(df):
 
     # Labels (Percent)
     ax2.bar_label(rects3, padding=3, fmt='%.1%',
-                  fontsize=10, fontweight='bold')
-    ax2.bar_label(rects4, padding=3, fmt='%.1%',
-                  fontsize=10, fontweight='bold')
-
-    ax2.set_ylabel('Estimated Vote Share')
-    ax2.set_title('Estimated Fan Vote Share Comparison',
                   fontsize=14, fontweight='bold')
-    ax2.set_xlabel('Week')
+    ax2.bar_label(rects4, padding=3, fmt='%.1%',
+                  fontsize=14, fontweight='bold')
+
+    ax2.set_ylabel('Estimated Vote Share', fontsize=16)
+    ax2.set_title('Estimated Fan Vote Share Comparison',
+                  fontsize=18, fontweight='bold')
+    ax2.set_xlabel('Week', fontsize=16)
     ax2.set_xticks(indices)
-    ax2.set_xticklabels(weeks)
+    ax2.set_xticklabels(weeks, fontsize=14)
+    ax2.tick_params(axis='y', labelsize=14)
     ax2.set_ylim(0, 0.6)
 
     fig.suptitle('Season 2: Jerry Rice (Runner-up) vs Drew Lachey (Winner)',
-                 fontsize=16, fontweight='bold')
+                 fontsize=22, fontweight='bold', y=0.98)
     plt.tight_layout()
 
     out_path = os.path.join(BASE_DIR, 'season2_jerry vs drew.png')
@@ -244,8 +282,8 @@ def plot_season2_final_pie(df):
 if __name__ == '__main__':
     df = load_and_prep_data()
 
-    print("Generating Plot 1: CV Distribution...")
-    plot_cv_distribution(df)
+    print("Generating Plot 1: CV Time Evolution...")
+    plot_cv_time_evolution(df)
 
     print("Generating Plot 2: Global Correlation...")
     plot_global_correlation(df)

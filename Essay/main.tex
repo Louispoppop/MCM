@@ -8,6 +8,10 @@ titlepage = false, abstract = true}
 \usepackage{algorithm}
 \usepackage{algorithmicx}
 \usepackage{algpseudocode}
+\usepackage{tocloft}
+\setlength{\cftbeforesecskip}{2pt}      % section 前间距
+\setlength{\cftbeforesubsecskip}{1pt}   % subsection 前间距
+\setlength{\cftparskip}{0pt}  
 %四款字体可以选择
 \usepackage{times}
 %\usepackage{newtxtext}
@@ -29,10 +33,12 @@ titlepage = false, abstract = true}
 \input{abstract}
 
 \maketitle
+\setcounter{tocdepth}{2}
 \tableofcontents
 
 \newpage
 \input{introduction}
+
 
 \input{assumptions}
 
