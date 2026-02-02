@@ -1,25 +1,17 @@
-%（本文分析了为了研究，我们在进行分析后应用了模型。然后使用然后我们建立了一个来寻求之间关系的模型实际上，该模型可以用来分析本文对分析了模型的灵敏性，因此原始数据影响模型的稳定性，但是结果仍可以接受）
-
-%（摘要中第一段对问题进行总体描述分析，之后对问题的建模、求解基本是1-2段写完的，然后单独一段对灵敏度等进行描述）
-
-%（必须按要求写在特定的控制页面上，摘要的实际长度略多于半页（2/3页左右），提交时作为参赛论文的首页。
-
-%摘要不能过长，在写完全文后再写摘要，摘要不能用文中的句子简单拼凑，要重新构思，反复推敲并修改到满意为止；摘要的第一句话尤其重要，可以适当运用问句；摘要中最好不要使用数学公式；通过阅读摘要，评审者能够全面了解作者的思路、方法以及主要结论）
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{abstract}
 
-    For thirty-four seasons, \textit{Dancing with the Stars} has captivated audiences by blending ballroom excellence with celebrity charisma. However, the mechanism combining professional judge scores and public fan votes remains a "Black Box," historically sparking controversy when popular contestants survive despite poor technical performance. This competition seeks to decode these dynamics and propose a fairer aggregation model.
+    For thirty-four seasons, \textit{Dancing with the Stars} has captivated audiences by blending ballroom excellence with celebrity charisma. However, the mechanism combining professional judge scores and public fan votes leads to some loopholes, historically sparking controversy when popular contestants survive despite poor technical performance. Our research seeks to deeply explore the original mechanism of DWTS and propose a better-balanced model.
 
-    \textbf{Decoding the Invisible Hand:} First, to overcome the challenge of unobservable fan data, we developed an \textbf{Inverse Bayesian Reconstruction Model}. By treating historical elimination outcomes as strict constraints on a Dirichlet distribution, we employed Monte Carlo simulations to infer the latent voting shares for every week. The model achieved a \textbf{98.3\%} historical reproduction rate and revealed a "Bubble Effect," where voting certainty is highest for at-risk contestants.
+    \textbf{Fan Voting Distribution Estimation:} To overcome the challenge of unobservable fan data, we developed an \textbf{Inverse Bayesian Estimation Model}. By treating historical elimination outcomes as strict constraints on a Dirichlet distribution, we employed Monte Carlo simulations to infer the latent voting shares for every week, during which the assumed base popularity of contestants are calculated. The model achieved a \textbf{98.3\%} historical reproduction rate and revealed a "Bubble Effect", where voting certainty is highest for at-risk contestants.
 
-    \textbf{Analyzing the Popularity Machine:} Second, utilizing a \textbf{Linear Mixed-Effects Model}, we quantified the drivers of success. We discovered a fundamental divergence: judges evaluate a multi-factor technical matrix (Skill, Partner, Age), whereas fans overwhelmingly vote for pre-existing \textbf{Base Popularity} regardless of weekly performance. This finding explains the structural vulnerability of linear aggregation rules to "popularity monopolies."
+    \textbf{Analysis of Celebrity Characteristics:} We employed a \textbf{Linear Mixed-Effects Model (LMM)} to analyze key characteristics by fitting three target variables: final placement, judge scores, and fan votes. Notably, the model for fan voting achieved an exceptional $R^2$ of \textbf{0.989}. We concluded that \textbf{Base Popularity} and \textbf{Professional Partner Strength} are the primary determinants of competition outcomes. Comparative analysis further reveals a distinct divergence: judges evaluate a multi-dimensional matrix of technical factors, whereas fan support is overwhelmingly driven by pre-existing popularity rather than performance quality.
 
-    \textbf{Simulating Parallel Universes:} Third, we established a \textbf{Dual-Track Counterfactual Framework} to compare the show's two historical systems: Rank-based (The "Shield") and Percent-based (The "Megaphone"). Simulations confirmed that while the Rank system prevents monopoly, it suppresses fan enthusiasm. Conversely, the Percent system suffers from "Linear Vulnerability," allowing anomalies like Season 27's Bobby Bones to become mathematically invincible.
+    \textbf{Benchmark Rule Evaluation and Judges' Choice Mechanism:} We established a \textbf{Dual-Track Framework} to compare the show's two historical systems: Rank-based and Percent-based. Simulations confirmed while the Rank system prevents monopoly, it suppresses fan enthusiasm. Conversely, the Percent system suffers from "Linear Vulnerability".
 
-    \textbf{Optimizing the Future:} Finally, we propose the \textbf{Adaptive Logistic Meritocracy System (ALMS)}. This novel mechanism introduces a Sigmoid saturation curve to impose a "soft ceiling" on extreme popularity and dynamically adjusts sensitivity based on competition intensity. Stress-testing demonstrates that ALMS achieves a Pareto improvement: increasing technical fairness by \textbf{13.3\%} while retaining \textbf{95.4\%} of fan satisfaction. We recommend ALMS, alongside the "Judges' Save," as the optimal strategy for the show's post-game era.
+    \textbf{The creation of the well-balanced Mechanism:} We propose the \textbf{Adaptive Logistic Meritocracy System (ALMS)}. This novel mechanism introduces a Sigmoid saturation curve to impose a "soft ceiling" on extreme popularity and dynamically adjusts sensitivity based on competition intensity. Stress-testing demonstrates that ALMS achieves a Pareto improvement.We recommend ALMS, alongside the "Judges' Choice," as the optimal strategy for the show's post-game era.
 
     \begin{keywords}
-        Inverse Bayesian Inference; Monte Carlo Simulation; Linear Mixed-Effects Model; Social Choice Theory; Adaptive System; Dancing with the Stars
+        \textbf{Inverse Bayesian Inference, Monte Carlo Simulation, Linear Mixed-Effects Model, Social Choice Theory, Adaptive System, Dancing with the Stars}
     \end{keywords}
 
 \end{abstract}

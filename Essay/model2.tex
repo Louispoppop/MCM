@@ -38,8 +38,9 @@ We process the three demographic features, figure \ref{fig:characteristics_dist}
 
 \subsubsection{Professional Partner Strength}
 The professional partner plays a huge role in a celebrity's journey. We engineered a "Pro Strength" characteristic. This metric is derived specifically from the professional partner's historical data, calculated as the equally weighted average (avoid introducing subjective bias) of their historical normalized judge scores ($S_{norm}$) and historical normalized final placements ($P_{norm}$):
-\[ \text{Pro Strength} = 0.5 \times S_{norm} + 0.5 \times P_{norm} \]
-
+\begin{equation}
+\text{Pro Strength} = 0.5 \times S_{norm} + 0.5 \times P_{norm}
+\end{equation}
 \subsubsection{Base Popularity}
 The Base Popularity metric, derived in Task 1, is included to capture the fan base size.
 
@@ -47,7 +48,9 @@ The Base Popularity metric, derived in Task 1, is included to capture the fan ba
 We employ a \textbf{Linear Mixed-Effects Model (LMM)} to isolate the effect of individual characteristics while controlling for season-to-season systemic variability.
 
 We define $y_{i,s}^{(t)}$ as the target variable, $\mathbf{x}_{i,s}$ as the vector of fixed characteristics, and $b_s^{(t)} \sim \mathcal{N}(0, \sigma_b^2)$ as the random intercept for season $s$. The model is specified as:
-\[ y_{i,s}^{(t)} = \beta_0^{(t)} + \mathbf{x}_{i,s}^{\top} \boldsymbol{\beta}^{(t)} + b_s^{(t)} + \varepsilon_{i,s}^{(t)} \]
+\begin{equation}
+ y_{i,s}^{(t)} = \beta_0^{(t)} + \mathbf{x}_{i,s}^{\top} \boldsymbol{\beta}^{(t)} + b_s^{(t)} + \varepsilon_{i,s}^{(t)}
+\end{equation}
 where $\boldsymbol{\beta}^{(t)}$ represents the coefficients quantifying the impact of each characteristic.
 
 \subsection{Validation Strategy and Metrics}
@@ -58,7 +61,9 @@ To ensure robustness, we used two data splitting strategies:
 \end{enumerate}
 
 We evaluate performance using \textbf{RMSE} (Root Mean Square Error) and $\mathbf{R^2}$ (Coefficient of Determination), defined as follows:
-\[ \text{RMSE} = \sqrt{\frac{1}{n} \sum_{j=1}^n (y_j - \hat{y}_j)^2}, \quad R^2 = 1 - \frac{\sum_{j=1}^n (y_j - \hat{y}_j)^2}{\sum_{j=1}^n (y_j - \bar{y})^2} \]
+\begin{equation}
+    \text{RMSE} = \sqrt{\frac{1}{n} \sum_{j=1}^n (y_j - \hat{y}_j)^2}, \quad R^2 = 1 - \frac{\sum_{j=1}^n (y_j - \hat{y}_j)^2}{\sum_{j=1}^n (y_j - \bar{y})^2} 
+\end{equation}
 
 \subsection{Results and Discussion}
 
@@ -91,7 +96,9 @@ The analysis reveals varying predictiveness across different competition aspects
 
 \subsubsection{Analysis of Characteristics on Contestant Success}
 To compare success across seasons with varying cohort sizes ($N_s$), we define the \textbf{Normalized Placement Score} ($y_{place}$) for a contestant with rank $r_{i,s}$:
-\[ y_{place} = \frac{N_s - r_{i,s} + 1}{N_s} \]
+\begin{equation}
+y_{place} = \frac{N_s - r_{i,s} + 1}{N_s}   
+\end{equation}
 
 This normalizes placement to $(0, 1]$, where a value closer to 1 indicates a superior rank, ensuring fair comparison across different seasons.
 
@@ -141,4 +148,4 @@ The analysis reveals a fundamental divergence in decision mechanisms:
     \end{itemize}
 \end{itemize}
 
-In conclusion, the impact is \textbf{not} the same. Judges evaluate the \textit{performance} (multi-factor technical assessment), while fans largely validate the \textit{person} (single-factor popularity contest). Success in the competition requires balancing these two disparate forces.
+In conclusion, the impact is \textbf{not} the same. Judges evaluate the \textit{performance} (multi-factor technical assessment), while fans largely validate the \textit{person} (single-factor popularity contest)~\cite{biggs2024maths}. Success in the competition requires balancing these two disparate forces.

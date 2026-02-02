@@ -9,10 +9,10 @@ the mechanism for combining professional evaluations (Judges)
 and public popularity (Fans) has shifted between two distinct paradigms:
 \begin{itemize}
     \item \textbf{Rank-based System:} Employed in Seasons 1-2 and 28+,
-          utilizing the sum of ordinal ranks ($\min [R_J + R_F]$).
+          utilizing the sum of ordinal ranks.
           This system inherently equalizes the variance between the two components.
     \item \textbf{Percentage-based System:} Employed in Seasons 3-27,
-          utilizing the sum of normalized cardinal shares ($\max [P_J + P_F]$).
+          utilizing the sum of normalized cardinal shares.
           This system is sensitive to the magnitude of vote distribution.
 \end{itemize}
 
@@ -69,7 +69,7 @@ Positive $\Delta$ values indicate the Percent-based system yields results closer
     \begin{minipage}{0.48\textwidth}
         \centering
         \includegraphics[width=\linewidth]{model3_imgs/Task2_Subtask1_BarChart.png}
-        \caption{Weekly Comparison of Fan Deviation Index}
+        \caption{Weekly Comparison of FDI}
         \label{fig:fdi_barchart}
     \end{minipage}
 \end{figure}
@@ -94,13 +94,6 @@ We selected four representative cases:
 Jerry Rice (S2), Billy Ray Cyrus (S4), Bristol Palin (S11,S15), and Bobby Bones (S27).
 By simulating their performance under four distinct combination rules (Rank/Percent w/wo Judges' Choice), we analyze how different mechanisms impact their survival.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\linewidth]{model3_imgs/Task2_Subtask2_Timeline_2plus3.png}
-    \caption{Survival Timelines of Controversial Contestants. The ``Rank + Choice'' mechanism (labeled as ``Rank + Save'' in figures) shows early interception.}
-    \label{fig:combined_timelines}
-\end{figure}
-
 As illustrated in Figure \ref{fig:combined_timelines},
 different mechanisms exhibit varying results for these contestants:
 
@@ -110,6 +103,13 @@ different mechanisms exhibit varying results for these contestants:
     \item \textbf{Rank + Judges' Choice:} This combination proves to be the most rigorous filter.
           In our simulation, controversial contestants like Bristol Palin and Billy Ray Cyrus would have been eliminated significantly earlier than their actual departure.
 \end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{model3_imgs/Task2_Subtask2_Timeline_2plus3.png}
+    \caption{Survival Timelines of Controversial Contestants. The ``Rank + Choice'' mechanism (labeled as ``Rank + Save'' in figures) shows early interception.}
+    \label{fig:combined_timelines}
+\end{figure}
 
 Our analysis demonstrates that the \textbf{Rank-based System with Judges' Choice} can effectively
 screen out controversial contestants with insufficient dance skills and
@@ -127,13 +127,17 @@ To quantify these abstract concepts, we define three key metrics based on the co
 \begin{enumerate}
     \item \textbf{Fairness Index ($I_{\text{fair}}$):}
           Defined as the Spearman rank correlation coefficient ($\rho$) between the final rank derived from the combination rule and the pure \textit{Judge Rank}.
-          \[ I_{\text{fair}} = \rho(\mathbf{R}_{\text{final}}, \mathbf{R}_{\text{judge}}) = 1 - \frac{6 \sum_{i=1}^{N_t} (R_{\text{final}, i} - R_{\text{judge}, i})^2}{N_t(N_t^2 - 1)} \]
+          \begin{equation}
+          I_{\text{fair}} = \rho(\mathbf{R}_{\text{final}}, \mathbf{R}_{\text{judge}}) = 1 - \frac{6 \sum_{i=1}^{N_t} (R_{\text{final}, i} - R_{\text{judge}, i})^2}{N_t(N_t^2 - 1)}
+          \end{equation}
           where $R_{\text{final}, i}$ and $R_{\text{judge}, i}$ represent the final rank and technical rank of contestant $i$ respectively, and $N_t$ is the number of contestants in week $t$.
           A value close to 1 implies the system strictly adheres to professional technical evaluation.
 
     \item \textbf{Fan Satisfaction Index ($I_{\text{fan}}$):}
           Similarly, defined as the Spearman rank correlation between the final rank and the pure \textit{Fan Rank}.
-          \[ I_{\text{fan}} = \rho(\mathbf{R}_{\text{final}}, \mathbf{R}_{\text{fan}}) \]
+          \begin{equation}
+          I_{\text{fan}} = \rho(\mathbf{R}_{\text{final}}, \mathbf{R}_{\text{fan}})
+          \end{equation}
           A higher value indicates the outcomes strongly reflect audience preferences.
 
     \item \textbf{Extreme Risk Rate ($R_{\text{risk}}$):}
@@ -151,7 +155,7 @@ to represent the show producers' strategic trade-off:
 The parameter $\alpha$ could describe the show's identity:
 \begin{itemize}
     \item $\alpha \to 0 / 1$: Prioritizes Technical skills (0) / Popularity (1).
-    \item $\alpha \in [0.4, 0.6]$: The ``Balanced Zone'', ideal for a commercial TV show that requires both high performance quality and viewer engagement.
+    \item $\alpha \in [0.4, 0.6]$: The ``Balanced Zone'', is ideal for a commercial TV show that requires both high performance quality and viewer engagement.
 \end{itemize}
 
 \begin{figure}[H]
@@ -171,15 +175,14 @@ The parameter $\alpha$ could describe the show's identity:
 \end{figure}
 
 From the sensitivity analysis (Figure \ref{fig:sensitivity_analysis}), we observe that
-the ``Rank + Choice'' system scores highest in the ``Balanced Zone'' ($0.4 < \alpha < 0.6$).
-The mechanism also demonstrates low probability of eliminating the top-ranked dancer by judges (Figure \ref{fig:risk_analysis}).
-
+the ``Rank'' system scores higher than ``Percent'' system in the ``Balanced Zone'' ($0.4 < \alpha < 0.6$).
+The ``Rank+Choice'' mechanism demonstrates higher probability of eliminating the top-ranked dancer by judges (Figure \ref{fig:risk_analysis}),which marks a better ability to limit the extreme number of votes from the audience.
 \subsubsection{Policy Recommendation}
 
-Our sensitivity analysis (Figure \ref{fig:sensitivity_analysis}) demonstrates that the \textbf{Rank-based System with Judges' Choice} is the Pareto-optimal solution for the "Balanced Zone" ($0.4 < \alpha < 0.6$).
+Our analysis (Figure \ref{fig:sensitivity_analysis} \& Figure \ref{fig:risk_analysis}) demonstrates that the \textbf{Rank-based System with Judges' Choice} is the Pareto-optimal solution.
 \begin{itemize}
     \item \textbf{Why Rank over Percent?} While the Percent system maximizes $I_{\text{fan}}$, it incurs an unacceptably high $R_{\text{risk}}$ of eliminating talented professionals (Figure \ref{fig:risk_analysis}). The Rank system provides structural equity.
-    \item \textbf{Why Include Judges' Choice?} It acts as an essential safety valve. The simulations prove it reduces the rate of accidental elimination of top talent by approximately 35\% without significantly harming general fan satisfaction.
+    \item \textbf{Why Include Judges' Choice?} It acts as an essential safety valve.It can help us reduce the probability of the audience's autocratic power and reduce the probability of dancers with extremely high audience votes but extremely low judges entering the finals.
 \end{itemize}
 
 \textbf{Final Verdict:} We strongly recommend retaining the current \textbf{Rank-based System with Judges' Choice} (S28+ format) for future seasons. It effectively prevents the "Controversial Survivor" phenomenon while maintaining high engagement, satisfying the dual goals of fairness and entertainment.
