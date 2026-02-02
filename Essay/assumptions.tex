@@ -1,27 +1,23 @@
 \section{Assumptions}
 
 % In this section, list and explain all modeling assumptions you make. Each assumption should be realistic, necessary, and clearly stated.
-
-\subsection{Model I: Fan Voting Reconstruction}
-
 \begin{description}
+
+    \item[Model I: Fan Voting Reconstruction]
+
     \item[Assumption 1: Performance-Popularity Mixture Hypothesis] Fan voting is driven by a dual mechanism: a long-term \textit{Base Popularity} (invariant fan base) and a short-term \textit{Performance} component (immediate reaction to the dance). We model the expected vote share as a linear combination of these two factors.
     \item[Assumption 2: Rational Judges' Save (Season 28+).] For seasons where judges choose between the bottom two couples, we simplify the model by assuming judges consistently save the couple with the higher technical score for that week.
     \item[Assumption 3: Dirichlet Distribution for Vote Shares.] Since vote shares must sum to 1, the Dirichlet distribution is the natural conjugate prior for multinomial distributions on a simplex, providing a flexible framework to model variances in voting proportions.
     \item[Assumption 4: Constant Total Vote Volume.] Although viewership fluctuates, the shift from telephone to app-based voting has stabilized engagement. Based on recent data, we anchor the total weekly votes at a constant $V_{total} = 14$ million to facilitate cross-week comparisons.
-\end{description}
 
-\subsection{Model II: Factor Analysis}
+    \item[Model II: Factor Analysis]
 
-\begin{description}
     \item[Assumption 5: Partnership Stability.] We assume the pairing of a celebrity and a professional dancer is constant throughout the season. Rare modifications (e.g., temporary replacements due to injury) are ignored to maintain model stability.
     \item[Assumption 6: Proxy Sufficiency.] The "Base Popularity" derived in Model I is a sufficient proxy for the pre-existing fan base of the celebrity, capturing the majority of variance in initial voting behavior.
     \item[Assumption 7: Linearity of Effects.] We assume that the contributions of celebrity characteristics (Age, Industry) and partner strength to the final placement are linear and additive on the logit or normalized scale utilized in the Linear Mixed-Effects Model.
-\end{description}
 
-\subsection{Model III: Policy Simulation}
+    \item[Model III: Policy Simulation]
 
-\begin{description}
     \item[Assumption 8: Counterfactual Invariance.] We assume that the contestants' performance (Judge Scores) and latent popularity (Fan Votes) are independent of the aggregation rule used in a specific week. This allows us to simulate "Universe A" (Rank) and "Universe B" (Percent) using the same underlying performance data.
     \item[Assumption 9: Metric Comparability.] By mapping vote percentages to the rank domain, we assume that the "Fan-Friendliness" of different rules can be objectively compared using the Manhattan distance between the outcome rank and the fan's preferred rank (Fan Deviation Index).
 \end{description}
