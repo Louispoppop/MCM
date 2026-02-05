@@ -1,0 +1,60 @@
+\section{Model Details and Prospect}
+
+\subsection{Sensitivity Analysis \& Parameter Details}
+
+To validate the robustness of our models, we conducted a systematic sensitivity analysis, focusing primarily on Model I (Bayesian Estimation), as it serves as the foundational data source for all subsequent analyses. The defined parameter $\alpha$ in Model III \textbf{has been examined} according to figure \ref{fig:sensitivity_analysis_0}.
+
+\subsubsection{Parameter Sensitivity in Model I}
+
+The reliability of our inferred fan votes depends on two key assumptions: $\lambda=0.4$ and $\kappa=50$ to control the original distribution of the vote shares.
+
+To test whether our results are reliable enough, we performed a \textbf{Grid Search Experiment} across a broad parameter space:
+
+$\lambda \in [0.0, 0.5]$ with step length of 0.1;$\qquad\qquad\kappa \in [10, 90]$, step length 20.
+
+For each pair $(\lambda, \kappa)$, we re-ran the inference process across representative seasons and calculated the \textbf{Historical Reproduction Rate} and the \textbf{Average CV Value} to compare consistency and certainty.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/sensitivity_accuracy.png}
+        \label{fig:sens_xy_accuracy}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/sensitivity_cv.png}
+        \label{fig:sens_xy_cv}
+    \end{minipage}
+    \caption{Sensitivity Analysis of Model I across ($\lambda$, $\kappa$) Space}
+\end{figure}
+Our analysis yields two key insights regarding accuracy and uncertainty:
+
+For accuracy (Left), the 3D surface plot reveals a broad "high plateau," where the historical reproduction rate remains consistently above \textbf{98\%} across a wide range of parameter combinations. This indicates that our model is \textbf{highly robust} and \textbf{insensitive} to specific choices of $\lambda$ and $\kappa$, proving that the estimation validity is driven by the data structure rather than parameter fine-tuning.
+
+Regarding the regulation of uncertainty (Right), while accuracy is stable, the uncertainty (CV) shows a clear gradient driven by $\kappa$. This is mathematically expected, as $\kappa$ controls the variance of the Dirichlet distribution. We selected $\kappa=50$ not to maximize accuracy but to maintain a realistic level of uncertainty ($CV \approx 0.43$) that reflects the inherent ambiguity of fan voting.
+
+In conclusion, our choice of $\lambda=0.4$ and $\kappa=50$ places the model in a high-accuracy region while maintaining a realistic level of uncertainty, effectively balancing predictive power with statistical honesty.
+
+
+\subsubsection{Parameter Optimization in Model IV}
+
+These heatmaps visualize the impact of Base Slope ($K_{base}$) and Sensitivity ($\alpha$) on model performance, comparatively showing Fairness ($I_{\text{fair}}$), Satisfaction ($I_{\text{fan}}$), and the Composite Score. The selected parameter set $(K_{base}=5, \alpha=10)$, highlighted by the blue box, resides in the optimal "sweet spot," maximizing the composite objective by balancing the trade-off between competitive differentiation and mass appeal.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{Task4_Parameter_Sensitivity.png}
+    \caption{Parameter Details for the Adaptive System}
+    \label{fig:sensitivity_analysis}
+\end{figure}
+
+\subsection{Future Work}
+
+\subsubsection{Model Extension: Towards Game-Theoretic Robustness}
+
+While our Adaptive Logistic Meritocracy System successfully addresses the fairness-satisfaction trade-off, future research should scrutinize its robustness through \textbf{Algorithmic Game Theory}. A critical extension is to verify \textbf{Incentive Compatibility (IC)} against strategic voting. Although we assume sincere voting, some fan groups might engage in dishonest voting and manipulate outcomes. Future studies, ideally using individual-level ballot data, could focus on modeling stakeholders as rational agents to determine whether the system admits a \textit{Nash Equilibrium} in which truthful voting remains the dominant strategy. A primary bottleneck for these economic extensions is data granularity. Our current model relies on aggregated vote shares ($\hat{\mathbf{S}}_t$). To rigorously test the excellent economic effects, we require \textbf{individual-level ballot data} (e.g., identifying if user $i$ voted for contestant $A$ implies a zero probability of voting for rival $B$). 
+
+\subsubsection{Model Application: Beyond the Show}
+
+The core architecture of our model—a dual-track aggregation system with non-linear saturation—has broad applicability beyond reality television. It offers a generalizable framework for any domain requiring the integration of \textbf{"Expert Wisdom"} and \textbf{"Crowd Preference"}. For instance, our dynamic sensitivity parameter ($K$) could serve as an automated quality control filter: detecting anomalous variance in community votes and automatically increasing the weight of expert reviewers to stabilize the outcome. Moreover, we envision deploying this model as a background "Shadow Scorer" for show producers. It would generate live metrics on "Fairness Risk," alerting producers when the divergence between popularity and skill exceeds a safety threshold, potentially triggering automatic interventions.

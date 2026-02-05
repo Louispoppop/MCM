@@ -1,0 +1,64 @@
+\AImatter
+\begin{ReportAiUse}{9}
+
+\bibitem{1}
+
+\textbf{GitHub CoPilot (Feb 2, 2026 version)}\\
+We use it for code syntax checking and error debugging.
+
+\bibitem{2}
+
+\textbf{Google Gemini (Jan 2026 version, Gemini 3 Pro)}\\
+\textbf{Query}: For Task 2, we want to judge which method (Ranking vs. Percentage) favors the audience more for the same data. What would be a good metric to choose?\\
+\textbf{Output}: To evaluate which method favors the audience, you should choose the "Rank Correlation Coefficient" (such as Spearman's rho or Kendall's tau) between the "Fan-Only Rank" and the "Final Combined Rank". A higher correlation indicates the method aligns more closely with the audience's preference. Alternatively, you can calculate the "Survival Rate" of the audience's top-voted contestant under each system.
+
+\bibitem{3}
+
+\textbf{DeepSeek-V3.2 (Dec 1, 2025 version)}\\
+\textbf{Query}: Based on this mathematical modeling problem, please provide some modeling ideas for each Task to help us clarify exactly what problems we need to solve.\\
+\textbf{Output}: Task 1 involves establishing a relationship between observed outcomes and latent fan preferences using statistical estimation to reconstruct the unknown data. Task 2 requires applying different historical aggregation rules to the dataset to observe result stability and analyzing whether specific controversial outcomes would change under different mechanisms. Task 3 focuses on quantifying the influence of professional partners and contestant demographics on the competition results using correlation or regression analysis. Task 4 asks for the design of an optimized scoring mechanism to better balance fairnessand audience engagement.
+
+\bibitem{4}
+
+\textbf{OpenAI ChatGPT (2026 version, GPT-5.2)}\\
+\textbf{Query}: For the code results of Task 3, I need some visualizations to make my paper more intuitive. Based on my results, can you recommend some chart types?\\
+\textbf{Output}: Based on your needs, I recommend the following visualizations: \\(1) A Diverging Bar Chart to clearly display the gap between Judge Rank and Fan Rank for controversial contestants.\\ (2) A Bump Chart (Rank Tracking Chart) to visualize the trajectory of a celebrity's standing week by week.\\ (3) A Radar Chart to compare the attributes (e.g., Technical Score, Popularity, Consistency) of the bottom two couples.
+
+\bibitem{5}
+
+\textbf{Google Gemini (Jan 2026 version, Gemini 3 Pro)}\\
+\textbf{Query}: We want to summarize the introduction of the "judges choosing from the bottom two" format in Task 2 with the most precise language. We thought of "Judges' Save" and "Judges' Choice". Which one is more appropriate?\\
+\textbf{Output}: "Judges' Choice" is the more appropriate term in this specific context. While "Judges' Save" implies a unilateral rescue (often used in shows like American Idol), "Judges' Choice" better describes the specific mechanism of the judges deciding between two options (the bottom two couples) to determine who continues. It emphasizes the comparative selection process.
+
+\bibitem{5}
+
+\textbf{Google Gemini (Jan 2026 version, Gemini 3 Pro)}\\
+\textbf{Query}: How do we commonly conduct sensitivity analysis? Answer briefly.\\
+\textbf{Output}: To commonly conduct sensitivity analysis, you generally follow these streamlined steps:\\
+1.  Select Parameters: Identify the key input parameters in your model that are uncertain or subject to variation.\\
+2.  Define Ranges: Determine a realistic range or set of discrete values for each parameter.\\
+3.  Vary Inputs: Systematically change one parameter at a time (One-At-A-Time, OAT) or vary multiple parameters simultaneously (Global, e.g., grid search or Monte Carlo) while keeping others fixed.\\
+4.  Observe Outputs: Run the model for each variation and record the target output metric.\\
+5.  Analyze Impact: Quantify how much the output changes relative to the input variations. If the output remains stable despite large input changes, the model is robust; if it fluctuates wildy, the model is sensitive to that specific parameter.
+
+\bibitem{6}
+
+\textbf{Google Gemini (Jan 2026 version, Gemini 3 Pro)}\\
+\textbf{Query}: I want to draw a 3D heatmap using Python, give me some instructions.\\
+\textbf{Output}: To draw a 3D heatmap (surface plot) in Python using matplotlib:\\
+1. Prepare Data:\\
+- Create 1D arrays for your X and Y axes.\\
+- Use numpy.meshgrid(X, Y) to create 2D coordinate matrices.\\
+- Prepare your Z values (the "heat") as a 2D matrix matching the grid dimensions.\\
+2. Setup Figure:\\
+- Initialize a figure: fig = plt.figure().\\
+= Add a 3D subplot: ax = fig.add\_subplot(111, projection='3d').\\
+3. Plot Surface:\\
+- Use ax.plot\_surface(X, Y, Z, cmap='viridis').\\
+- Tip: Add edgecolors='k' and linewidth=0.1 to see the grid lines on the surface.\\
+4. Refine:\\
+- Add labels: ax.set\_xlabel(...).\\
+- Add a colorbar: fig.colorbar(surf).\\
+- Adjust the viewing angle: ax.view\_init(elev=30, azim=45).\\
+
+\end{ReportAiUse}

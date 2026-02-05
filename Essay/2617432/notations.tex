@@ -1,0 +1,49 @@
+\section{Notations}
+\setlength{\parindent}{2em}
+
+The core symbols and their definitions used in this study are summarized in Table~\ref{table:variables}, providing an overview of the key parameters and their related meanings.
+
+\begin{table}[H]
+    \centering
+    \caption{Main variables and meanings}
+    \renewcommand{\arraystretch}{1.2}
+    \begin{tabular}{cll}
+        \toprule
+        \textbf{Symbol}      & \textbf{Description}                               & \textbf{Definition / Value}                                  \\
+        \midrule
+        \multicolumn{3}{l}{\textbf{Model I Variables}}                                                                                           \\
+        $\mathbf{S}_t$       & Latent fan vote share vector at week $t$           & $\mathbf{S}_t \in \Delta^{n_t-1}$                            \\
+        $\mathbf{J}_t$       & Observed judges' score vector at week $t$          & $\mathbf{J}_t \in \mathbb{R}^{n_t}$                          \\
+        $\mathcal{O}_t$      & Observed elimination outcome at week $t$           & Binary / Categorical                                         \\
+        $\boldsymbol{\beta}$ & Latent Base Popularity vector                      & $\boldsymbol{\beta} \in \Delta^{N-1}$                        \\
+        $\mathbf{P}_t$       & Normalized judge performance vector                & $P_{i,t} = J_{i,t} / \sum J_{k,t}$                           \\
+        $\boldsymbol{\mu}_t$ & Expected voting propensity                         & $\mu_{i,t} = E[S_{i,t}]$                                     \\
+        $\lambda$            & Performance weight coefficient                     & Constant ($0.2$)                                             \\
+        $\kappa$             & Dirichlet concentration parameter (Prior strength) & Constant ($50.0$)                                            \\
+        $\text{Ext}_t$       & Set of active contestants in week $t$              & Subset of $\mathcal{C}$                                      \\
+        $\Phi_t$             & Set of valid samples satisfying constraints        & $\Phi_t = \{\mathbf{s} \mid L(\mathcal{O}_t|\mathbf{s})=1\}$ \\
+        $CV_{i,t}$           & Coefficient of Variation for partial uncertainty   & $CV = \sigma / \mu$                                          \\
+        \midrule
+        \multicolumn{3}{l}{\textbf{Model II Variables}}                                                                                          \\
+        $y_{i,s}$            & Target variable in LMM (e.g., Placement)           & Normalized $[0,1]$                                           \\
+        $\mathbf{x}_{i,s}$   & Feature vector (Age, Industry, etc.)               & Categorical / Numerical                                      \\
+        $b_s$                & Random effect for season $s$                       & $b_s \sim N(0, \sigma^2)$                                    \\
+        \midrule
+        \multicolumn{3}{l}{\textbf{Model III Variables}}                                                                                         \\
+        $\mathbf{R}_{F,t}$   & Implied Fan Rank Vector                            & $\text{Rank}(-\mathbf{P}_{F,t})$                             \\
+        $\text{FDI}_k$       & Fan Deviation Index for rule $k$                   & Manhattan Dist. to $\mathbf{R}_{F}$                          \\
+        $\Delta$             & Variance Suppression Indicator                     & $\text{FDI}_{Rank} - \text{FDI}_{Percent}$                   \\
+        $I_{fair}$           & Fairness Index (Judge Correlation)                 & Spearman $\rho(\mathbf{R}_{final}, \mathbf{J})$              \\
+        $R_{risk}$           & Probability of System Failure                      & $P(\text{Best Eliminated})$                                  \\
+        $S(\alpha)$          & Policy Optimization Score                          & Weighted objective function                                  \\
+        \midrule
+        \multicolumn{3}{l}{\textbf{Model IV Variables}}                                                                                          \\
+        $S(x)$               & Adaptive Effective Score (Sigmoid)                 & $S(x) \in (0,1)$                                             \\
+        $c$                  & Baseline Performance Threshold (Center)            & Constant                                                     \\
+        $K$                  & Sensitivity Slope Parameter                        & $K_{base} + \alpha/\sigma_{votes}$                           \\
+        $\sigma_{votes}$     & Standard Deviation of Fan Vote Distributions       & Variance Metric                                              \\
+        \bottomrule
+    \end{tabular}
+    \label{table:variables}
+\end{table}
+

@@ -1,0 +1,180 @@
+% In this section, build the core mathematical models for the problem.
+\section{Model I: Bayesian Estimation of Fan Voting Distribution}
+
+\subsection{Problem Formulation}
+The estimation of spectator voting data poses
+an \textbf{Inverse Problem} involving multi-dimensional hidden variables.
+Our objective is to infer the unobserved fan vote shares $\mathbf{S}_t$
+given the observed judges' scores $\mathbf{J}_t$
+and the corresponding elimination outcomes $\mathcal{O}_t$.
+
+The target variable resides on the standard simplex:
+\begin{equation}
+    \Delta^{n_t-1} = \left\{ \mathbf{x} \in \mathbb{R}^{n_t} \bigg| \sum_{i=1}^{n_t} x_i = 1, x_i > 0 \right\}
+\end{equation}
+
+Analytical derivation of the posterior
+$p(\mathbf{S}_t | \mathbf{J}_t, \mathcal{O}_t)$ is difficult
+due to the discontinuous and non-differentiable nature of the aggregation rules
+(switching between Rank-based and Percentage-based systems).
+To tackle this problem, we adopt a \textbf{Simulation-Based Inference} framework,
+using Approximate Bayesian Computation (ABC)
+to approximate posterior probabilities
+and perform inference by comparing millions of random scenarios
+with historical realities, i.e., the Monte Carlo method.
+
+\subsection{Mathematical Model Establishment}
+
+\subsubsection{The Mixture Mean Hypothesis}
+We assume that the \textit{Expected Propensity} $\boldsymbol{\mu}_t$
+of fan votes is a weighted combination of two distinct forces:
+the contestant's \textit{Base Popularity}
+$\boldsymbol{\beta}$ (long-term fan loyalty, which is time-invariant in each season and latent)
+and their \textit{Judge Performance} $\mathbf{P}_t$ (short-term dance quality).
+\begin{equation}
+    \mu_{i,t} = (1 - \lambda) \cdot \frac{\beta_i}{\sum_{k \in \text{Ext}_t} \beta_k} + \lambda \cdot P_{i,t}
+    \label{eq:mixture}
+\end{equation}
+
+Here, $\lambda$ represents the weight of dance performance in the fans' decision.
+Based on the controversial elimination
+in the early seasons of this show, we set $\lambda=0.4$. This reflects the fact that DWTS audiences care more about their favorite celebrities' popularity than on-stage performance. 
+
+The actual votes follow a \textbf{Dirichlet distribution}:
+$\mathbf{S}_t \sim \text{Dirichlet}(\kappa \cdot \boldsymbol{\mu}_t)$,
+where $\kappa=50$ controls the variance to keep the distribution stable and realistic.
+
+\subsubsection{Constraints from Elimination Results}
+The historical elimination results act as strict rules.
+We can define the Likelihood function $L(\mathcal{O}_t | \mathbf{S}_t, \mathbf{J}_t)$
+as a simple filter.
+It equals 1 if the simulated votes lead to the correct elimination outcome $\mathcal{O}_t$, and 0 otherwise:
+\begin{itemize}
+    \item \textbf{Rank Rule:} The contestant with the lowest sum of $\text{Rank}(\mathbf{S}_t) + \text{Rank}(\mathbf{J}_t)$ is eliminated.
+    \item \textbf{Percentage Rule:} The contestant with the lowest total score $\mathbf{S}_t + \mathbf{P}_t$ is eliminated.
+    \item \textbf{Judges' Choice:} The elimination is valid if the actual eliminated contestant falls within the \textbf{Bottom-2} (the risk zone), making them eligible for elimination.
+\end{itemize}
+
+\subsection{Algorithm: Iterative Inverse Estimator}
+
+To find the unknown base popularity $\boldsymbol{\beta}$, we designed an iterative algorithm. It works similarly to the \textbf{Expectation-Maximization (EM)} method.
+
+\begin{algorithm}[H]
+    \caption{Iterative Solving for Base Popularity $\boldsymbol{\beta}$}
+    \begin{algorithmic}[1]
+        \State \textbf{Input:} Scores $\mathbf{J}$, Eliminations $\mathcal{O}$. \textbf{Output:} Base Popularity $\hat{\boldsymbol{\beta}}$
+        \State \textbf{Initialize:} $\boldsymbol{\beta}^{(0)} \leftarrow [1/N, \dots, 1/N]$ (Equal start)
+        \Repeat
+        \State $k \leftarrow k+1$
+        \For{each week $t = 1 \dots T$}
+        \State \textbf{Sampling:} Generate $M$ vote scenarios $\{\mathbf{S}_t^{(m)}\}$ based on current popularity $\boldsymbol{\beta}^{(k)}$.
+        \State \textbf{Filtering:} Keep only the scenarios that match the historical elimination result $\mathcal{O}_t$.
+        \State \textbf{De-mixing:} Isolate the implied popularity $\hat{\boldsymbol{\beta}}_t$ by inverting the mixture equation (\ref{eq:mixture}):
+        $$ \hat{\boldsymbol{\beta}}_t \leftarrow \frac{\bar{\mathbf{S}}_t - \lambda \mathbf{P}_t}{1 - \lambda} $$
+        \Statex \hskip\algorithmicindent (Where $\bar{\mathbf{S}}_t$ is the average of valid scenarios)
+        \EndFor
+        \State \textbf{Update:} Update $\beta_i^{(k+1)}$ by averaging $\hat{\beta}_{i,t}$ across all weeks.
+        \Until{Convergence of $\boldsymbol{\beta}$}
+        \State \Return $\hat{\boldsymbol{\beta}}$
+    \end{algorithmic}
+    \label{alg:pop_solve}
+\end{algorithm}
+
+\begin{algorithm}[H]
+    \caption{Monte Carlo Posterior Estimation}
+    \begin{algorithmic}[1]
+        \State \textbf{Input:} Optimized Popularity $\hat{\boldsymbol{\beta}}$, Scores $\mathbf{J}$, Eliminations $\mathcal{O}$
+        \State \textbf{Output:} Estimated Votes $\hat{\mathbf{S}}$, Uncertainty $\boldsymbol{\sigma}$
+        \For{each week $t = 1 \dots T$}
+        \State \textbf{Proposal Step:} Generate $N=20,000$ random scenarios $\{\mathbf{S}_t^{(n)}\}$ from Dirichlet distribution centered on $\mu_t(\hat{\boldsymbol{\beta}})$.
+        \State \textbf{Rejection Step:} Filter out valid scenarios $\Phi_t$:
+        $$ \Phi_t = \{ \mathbf{s} \in \{\mathbf{S}_t^{(n)}\} \mid L(\mathcal{O}_t | \mathbf{s}) = 1 \} $$
+        \State (Discard any scenario that contradicts the historical elimination)
+        \If{$|\Phi_t| > 0$}
+        \State $\hat{\mathbf{S}}_t \leftarrow \text{Mean}(\Phi_t)$ \Comment{Most likely vote distribution}
+        \State $\boldsymbol{\sigma}_t \leftarrow \text{StdDev}(\Phi_t)$ \Comment{Standard Deviation as uncertainty}
+        \Else
+        \State $\hat{\mathbf{S}}_t \leftarrow \boldsymbol{\mu}_t$ \Comment{Fallback to prior for extreme outliers}
+        \EndIf
+        \EndFor
+        \State \Return Sequence $\{\hat{\mathbf{S}}_t, \boldsymbol{\sigma}_t\}$ for all weeks.
+    \end{algorithmic}
+    \label{alg:monte_carlo}
+\end{algorithm}
+
+The main challenge is \textbf{Survivorship Bias}: sometimes, a dancer with low scores continues to survive. This implies they must have very high popularity. The algorithm \ref{alg:pop_solve} solves this by slowly increasing their popularity estimate in $\boldsymbol{\beta}$ until their survival makes mathematical sense.
+
+With the optimized Base Popularity $\hat{\boldsymbol{\beta}}$ determined,
+we proceed to the final phase: \textbf{Posterior Estimation}.
+We employ a high-density Monte Carlo Sampling(Algorithm \ref{alg:monte_carlo})
+to reconstruct the specific voting history and quantify uncertainty.
+
+
+\subsection{Validation and Results}
+
+\subsubsection{Consistency Verification}
+The model achieves a \textbf{98.7\%} Historical Reproduction Rate across 34 seasons.
+This means that in 98.7\% of weeks, our estimated fan votes correctly
+characterize the actual eliminated contestant as the one with
+the lowest combined score (or in the Bottom-2).
+This high fidelity proves that our model is reliable.
+
+\subsubsection{Uncertainty and The "Bubble Effect"}
+
+To evaluate the reliability of our estimates,
+we define the \textbf{Coefficient of Variation (CV)} as the metric for uncertainty: $CV = \sigma / \mu$.
+A low CV implies high certainty. Our analysis,
+particularly through the lens of a \textbf{Season 2 Case} Study,
+reveals that prediction certainty is \textbf{not uniform}.
+
+Moreover, we observe a phenomenon we term the \textbf{"Bubble Effect"}:
+contestants at risk of elimination (on the "bubble")
+show much higher estimation certainty than safe leaders.
+
+\textbf{Evidence I: Uncertainty Evolution}
+
+Figure \ref{fig:season2_cv} tracks the uncertainty throughout Season 2, in which Jerry Rice (at risk) shows consistently lower CV (higher certainty) than safe contestants like Lachey,validating the Bubble Effect. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{season2_cv_evolution.png}
+    \caption{Uncertainty Evolution in Season 2}
+    \label{fig:season2_cv}
+\end{figure}
+
+Since Rice was constantly near the elimination threshold, the mathematical constraints on his vote share were relatively tight; even small deviations would contradict his survival. Thus, the model locks in his popularity with high precision. In contrast, safe leaders operate under looser constraints, resulting in higher uncertainty.
+
+\textbf{Evidence II: The Popularity Gap}
+
+The root of Rice's "Bubble" status lies in the disparity between his skill and popularity (Figure \ref{fig:season2_pie}). 
+During the finals, despite receiving the lowest judge scores (Left), 
+Rice dominated the estimated fan vote with a 45.3\% share (Right). 
+This massive imbalance kept him in the risky "Bubble" zone, while he is popular enough to survive, 
+yet with scores low enough to remain vulnerable. 
+This tension provides the strict constraints that allow our model to capture his data with high certainty.
+
+\begin{table}[H]
+    \centering
+    \caption{Season 2 Finals Data Statistics and Analysis (Including Model Estimates)}
+    \resizebox{\textwidth}{!}{%
+        \begin{tabular}{lccccccccc}
+            \hline
+            \textbf{Celebrity} & \textbf{Score} & \textbf{J.Rank} & \textbf{Est.Share} & \textbf{Est.Votes} & \textbf{V.Rank} & \textbf{Sum} & \textbf{Result} & \textbf{Std} & \textbf{CV} \\ \hline
+            Drew Lachey        & 29.00          & \#1              & 0.3259             & 4.56m              & \#2              & $1+2=3$      & 1st             & 0.0413       & 0.1266      \\
+            Stacy Keibler      & 28.67          & \#2              & 0.2208             & 3.09m              & \#3              & $2+3=5$      & 3rd             & 0.0450       & 0.2036      \\
+            Jerry Rice         & 26.67          & \textbf{\#3}     & \textbf{0.4533}    & 6.35m              & \textbf{\#1}     & $3+1=4$      & 2nd             & 0.0543       & 0.1198      \\ \hline
+        \end{tabular}%
+    }
+    \label{tab:season2_results}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{season2_final_pie.png}
+    \caption{Season 2 Finals: Judge Score Distribution vs. Estimated Fan Vote Share.}
+    \label{fig:season2_pie}
+\end{figure}
+
+
+This case study validates that our model not only reconstructs the voting history,
+but also correctly reflects the mathematical properties of the elimination rules.

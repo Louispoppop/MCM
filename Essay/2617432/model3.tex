@@ -1,0 +1,188 @@
+\section{Model III: Dynamic Comparison and Optimization of the Combination Systems}
+
+\subsection{Problem Formulation: The Dual-Track Simulation Framework}
+Having reconstructed the latent fan voting distribution $\hat{\mathbf{S}}_t$
+in Model I, we proceed to conducting
+an evaluation of the competition's combination methods.
+Throughout the thirty-four seasons of DWTS,
+the mechanism for combining professional evaluations (Judges)
+and public popularity (Fans) has shifted between two distinct paradigms:
+\begin{itemize}
+    \item \textbf{Rank-based System:} Employed in Seasons 1-2 and 28+,
+          utilizing the sum of ordinal ranks.
+          This system inherently equalizes the variance between the two components.
+    \item \textbf{Percentage-based System:} Employed in Seasons 3-27,
+          utilizing the sum of normalized cardinal shares.
+          This system is sensitive to the magnitude of vote distribution.
+\end{itemize}
+
+Our objective is to quantify the intrinsic "Fan-Friendliness" of these systems
+via a counterfactual simulation.
+We establish a \textbf{Dual-Track Simulation} framework:
+for every historical week $t$,
+we fix the contestants' Judge Scores $\mathbf{J}_t$ and
+Estimated Fan Votes $\hat{\mathbf{S}}_t$ (derived from Model I),
+while varying the combination logic to generate parallel outcomes.
+
+\subsubsection{Standardization and Metric Definition}
+To facilitate a rigorous comparison between the ordinal nature of ranks
+and the cardinal nature of percentages,
+we introduce the \textbf{Fan Deviation Index (FDI)}.
+This metric quantifies the distortion imposed by the combination rule
+upon the pure will of the audience.
+
+First, we convert the estimated fan voting share $\mathbf{P}_{F,t}$ into rankings:
+\begin{equation}
+    \mathbf{R}_{F,t} = \text{Rank}(-\mathbf{P}_{F,t})
+\end{equation}
+
+The FDI for a given rule $k \in \{\text{Rank}, \text{Percent}\}$ is defined as the
+\textbf{normalized Manhattan distance} between the rule-derived final ranking $\mathbf{R}_{\text{final}, k}$ and the pure fan ranking $\mathbf{R}_{F}$:
+\begin{equation}
+    \text{FDI}_k^{(t)} = \frac{1}{N_t} \sum_{i=1}^{N_t} \left| R_{\text{final}, k, i} - R_{F, i} \right|
+\end{equation}
+where $N_t$ is the number of contestants in week $t$.
+
+Explanation:
+\begin{itemize}
+    \item Low FDI ($\to 0$): The system faithfully preserves the ordinal preferences of the audience (High Fan-Friendliness).
+    \item High FDI: The system allows judge scores to significantly override fan preferences (Judge-Dominant).
+\end{itemize}
+
+\subsection{Analysis Results Comparison}
+Our analysis of FDI across 34 seasons reveals a consistent bias,
+as illustrated in Figure \ref{fig:fdi_boxplot} and \ref{fig:fdi_barchart}.
+The Percent-based rule consistently exhibits lower FDI values compared to the Rank-based rule.
+
+Defining the differential $\Delta = \text{FDI}_{\text{Rank}} - \text{FDI}_{\text{Percent}}$,
+we observe that $\Delta > 0$ in over \textbf{83\%} of simulated weeks. This implies that the \textbf{Percentage-based System is inherently more Fan-Friendly}.
+Positive $\Delta$ values indicate the Percent-based system yields results closer to the fan vote.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{model3_imgs/Task2_Subtask1_Boxplot.png}
+        \caption{Distribution Box Plot of FDI}
+        \label{fig:fdi_boxplot}
+    \end{minipage}\hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{model3_imgs/Task2_Subtask1_BarChart.png}
+        \caption{Weekly Comparison of FDI}
+        \label{fig:fdi_barchart}
+    \end{minipage}
+\end{figure}
+
+
+This phenomenon is attributable to the mismatch of variance.
+Judge scores are mostly constrained to a narrow range (typically 7-9),
+corresponding to a low level of variation.
+In contrast, fan votes follow a heavy-tailed distribution
+(e.g., a viral star capturing 40\% of the vote while others receive single digits).
+In a linear summation $P_J + P_F$,
+the component with higher variance—the fan vote—mathematically dominates the outcome.
+
+Conversely, \textbf{the Rank system} forces a uniform distribution onto both components,
+effectively suppressing the "superstar effect" and restoring equal power to the judges.
+
+\subsection{Mechanism Analysis}
+To evaluate the robustness of these systems against extreme anomalies,
+we examine historical "Low-Score Survivors"—contestants who advanced
+despite poor technical performance, often sparking controversy~\cite{wade2014dancing}.
+We selected four representative cases:
+Jerry Rice (S2), Billy Ray Cyrus (S4), Bristol Palin (S11,S15), and Bobby Bones (S27).
+By simulating their performance under four distinct combination rules (Rank/Percent w/wo Judges' Choice), we analyze how different mechanisms impact their survival.
+
+As illustrated in Figure \ref{fig:combined_timelines},
+different mechanisms exhibit varying results for these contestants:
+
+\begin{itemize}
+    \item \textbf{Percentage-based System:} Often allows candidates with massive fan bases (e.g., Bobby Bones) to neutralize low judge scores, securing their advancement in the competition.
+    \item \textbf{Rank-based System:} Compresses the "superstar" effect of fan votes, making it harder for popularity to override technical deficiencies.
+    \item \textbf{Rank + Judges' Choice:} This combination proves to be the most rigorous filter.
+          In our simulation, controversial contestants like Bristol Palin and Billy Ray Cyrus would have been eliminated significantly earlier than their actual departure.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{model3_imgs/Task2_Subtask2_Timeline_2plus3.png}
+    \caption{Survival Timelines of Controversial Contestants}
+    \label{fig:combined_timelines}
+\end{figure}
+
+Our analysis demonstrates that the \textbf{Rank-based System with Judges' Choice} can effectively
+screen out controversial contestants with insufficient dance skills and
+improve overall ~\cite{dehnart2010audience}.
+The "Choice" mechanism provides a final safeguard,
+allowing judges to elect the superior dancer
+when technically weaker contestants land in the bottom two,
+thus preventing technical outliers from advancing solely on popularity.
+
+\subsection{Policy Optimization: A Multi-Objective Evaluation}
+Concluding our analysis, we propose a comprehensive evaluation framework to guide future rule selection. We model the rule selection as a multi-objective optimization problem that balances two conflicting values: \textbf{Technical Fairness} (Meritocracy) and \textbf{Fan Satisfaction} (Popularity).
+
+\subsubsection{Metric Definitions}
+To quantify these abstract concepts, we define three key metrics based on the correlation between simulation results and ground-truth preferences:
+\begin{enumerate}
+    \item \textbf{Fairness Index ($I_{\text{fair}}$):}
+          Defined as the Spearman rank correlation coefficient ($\rho$) between the final rank derived from the combination rule and the pure \textit{Judge Rank}.
+          \begin{equation}
+          I_{\text{fair}} = \rho(\mathbf{R}_{\text{final}}, \mathbf{R}_{\text{judge}}) = 1 - \frac{6 \sum_{i=1}^{N_t} (R_{\text{final}, i} - R_{\text{judge}, i})^2}{N_t(N_t^2 - 1)}
+          \end{equation}
+          where $R_{\text{final}, i}$ and $R_{\text{judge}, i}$ represent the final rank and technical rank of contestant $i$ respectively, and $N_t$ is the number of contestants in week $t$.
+          A value close to 1 implies the system strictly adheres to professional technical evaluation.
+
+    \item \textbf{Fan Satisfaction Index ($I_{\text{fan}}$):}
+          Similarly, defined as the Spearman rank correlation between the final rank and the pure \textit{Fan Rank}.
+          \begin{equation}
+          I_{\text{fan}} = \rho(\mathbf{R}_{\text{final}}, \mathbf{R}_{\text{fan}})
+          \end{equation}
+          A higher value indicates the outcomes strongly reflect audience preferences.
+
+    \item \textbf{Extreme Risk Rate ($R_{\text{risk}}$):}
+          Defined as the accidental elimination of the
+          strongest contenders,
+          which measures how often the \textit{Judge's No.1} or \textit{Fan's No.1} is eliminated.
+\end{enumerate}
+
+\subsubsection{The Composite Utility Function and Alpha ($\alpha$)}
+Since fairness and fan satisfaction are often inversely related, we introduce a preference parameter $\alpha \in [0, 1]$
+to represent the show producers' strategic trade-off:
+\begin{equation}
+    S(\alpha) = (1 - \alpha) \cdot I_{\text{fair}} + \alpha \cdot I_{\text{fan}}
+\end{equation}
+The parameter $\alpha$ could describe the show's identity:
+\begin{itemize}
+    \item $\alpha \to 0 / 1$: Prioritizes Technical skills (0) / Popularity (1).
+    \item $\alpha \in [0.4, 0.6]$: The "Balanced Zone", is ideal for a commercial TV show that requires both high performance quality and viewer engagement~\cite{goldderby2019democracy}.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{model3_imgs/Task2_Subtask3_Sensitivity.png}
+        \caption{Sensitivity Analysis of Competition Formats}
+        \label{fig:sensitivity_analysis_0}
+    \end{minipage}\hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{model3_imgs/Task2_Subtask3_Risk.png}
+        \caption{Extreme Risk Analysis}
+        \label{fig:risk_analysis}
+    \end{minipage}
+\end{figure}
+
+From the sensitivity analysis (Figure \ref{fig:sensitivity_analysis}), we observe that
+the ``Rank'' system scores higher than ``Percent'' system in the ``Balanced Zone'' ($0.4 < \alpha < 0.6$).
+The ``Rank+Choice'' mechanism demonstrates higher probability of eliminating the top-ranked dancer by judges (Figure \ref{fig:risk_analysis}),which marks a better ability to limit the extreme number of votes from the audience.
+\subsubsection{Policy Recommendation}
+
+Our analysis (Figure \ref{fig:sensitivity_analysis} \& Figure \ref{fig:risk_analysis}) demonstrates that the \textbf{Rank-based System with Judges' Choice} is the Pareto-optimal solution.
+\begin{itemize}
+    \item \textbf{Why Rank over Percent?} While the Percent system maximizes $I_{\text{fan}}$, it incurs an unacceptably high $R_{\text{risk}}$ of eliminating talented professionals (Figure \ref{fig:risk_analysis}). The Rank system provides structural equity.
+    \item \textbf{Why Include Judges' Choice?} It acts as an essential safety valve.It can help us reduce the probability of the audience's autocratic power and reduce the probability of dancers with extremely high audience votes but extremely low judges entering the finals.
+\end{itemize}
+
+\textbf{Final Verdict:} We strongly recommend retaining the current \textbf{Rank-based System with Judges' Choice} (S28+ format) for future seasons. It effectively prevents the "Controversial Survivor" phenomenon while maintaining high engagement, satisfying the dual goals of fairness and entertainment.

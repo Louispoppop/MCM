@@ -1,0 +1,33 @@
+\section{Assumptions}
+
+% In this section, list and explain all modeling assumptions you make. Each assumption should be realistic, necessary, and clearly stated.
+
+\subsection{Model I: Fan Voting Reconstruction}
+\begin{description}
+    \item[Assumption 1: Performance-Popularity Mixture.] The expected fan vote share is a linear combination of a time-invariant \textit{Base Popularity} and the weekly \textit{Judge Performance}.
+    \item[Assumption 2: Rational Judges' Choice.] We assume judges consistently choose to rescue the couple with the higher judge score when deciding between the bottom two.
+    \item[Assumption 3: Dirichlet Distribution.] Fan vote shares are modeled using a Dirichlet distribution to satisfy the simplex constraint ($\sum x_i = 1$).
+    \item[Assumption 4: Constant Vote Volume.] We assume a constant total weekly vote volume ($V_{total} = 14$ million) to normalize cross-season comparisons~\cite{rice2024dwts}.
+\end{description}
+
+\subsection{Model II: Characteristic Analysis}
+\begin{description}
+    \item[Assumption 5: Partnership Stability.] Celebrity-professional pairings are assumed constant; temporary replacements are ignored.
+    \item[Assumption 6: Sufficient Proxy.] The estimated \textit{Base Popularity} fully captures the celebrity's pre-existing fan base variance.
+    \item[Assumption 7: Linearity of Effects.] The impact of characteristics (e.g., age, industry) on placement is linear and additive within the mixed-effects model.
+\end{description}
+
+\subsection{Model III: Policy Simulation}
+\begin{description}
+    \item[Assumption 8: Rule Independence.] Contestant performance and popularity are intrinsic and independent of the aggregation rule employed.
+    \item[Assumption 9: Metric Comparability.] The Manhattan distance between the actual ranking and the pure fan ranking effectively quantifies "Fan-Friendliness".
+\end{description}
+
+\subsection{Model IV: Adaptive Logistic Meritocracy System}
+\begin{description}
+    \item[Assumption 10: Diminishing Marginal Utility.] The effective influence of fan votes follows a logistic growth pattern, saturating at extreme values to prevent monopoly.
+    \item[Assumption 11: Dynamic Sensitivity.] The optimal discrimination parameter $K$ is inversely proportional to the vote distribution's standard deviation.
+\end{description}
+
+
+% You can add, delete, or refine the above assumptions according to the specific contest problem.

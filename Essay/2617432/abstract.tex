@@ -1,0 +1,17 @@
+\begin{abstract}
+
+    For thirty-four seasons, \textit{Dancing with the Stars} has captivated audiences by blending ballroom excellence with celebrity charisma. However, the mechanism combining professional judge scores and public fan votes leads to some loopholes, historically sparking controversy when popular contestants survive despite poor technical performance. Our research seeks to deeply explore the original mechanism of DWTS and propose a better-balanced model.
+
+    \textbf{Fan Voting Distribution Estimation:} To overcome the challenge of unobservable fan data, we developed an \textbf{Inverse Bayesian Estimation Model}. By treating historical elimination outcomes as strict constraints on a Dirichlet distribution, we employed Monte Carlo simulations to infer the latent voting shares for every week, during which the assumed base popularity of contestants are calculated. The model achieved a \textbf{98.3\%} historical reproduction rate and revealed a "Bubble Effect", where voting certainty is highest for at-risk contestants.
+
+    \textbf{Analysis of Celebrity Characteristics:} We employed a \textbf{Linear Mixed-Effects Model (LMM)} to analyze key characteristics by fitting three target variables: final placement, judge scores, and fan votes. Notably, the model for fan voting achieved an exceptional $R^2$ of \textbf{0.989}. We concluded that \textbf{Base Popularity} and \textbf{Professional Partner Strength} are the primary determinants of competition outcomes. Comparative analysis further reveals a distinct divergence: judges evaluate a multi-dimensional matrix of technical factors, whereas fan support is overwhelmingly driven by pre-existing popularity rather than performance quality.
+
+    \textbf{Benchmark Rule Evaluation and Judges' Choice Mechanism:} We established a \textbf{Dual-Track Framework} to compare the show's two historical systems: Rank-based and Percent-based. Simulations confirmed while the Rank system prevents monopoly, it suppresses fan enthusiasm. Conversely, the Percent system suffers from "Linear Vulnerability".
+
+    \textbf{The creation of the well-balanced Mechanism:} We propose the \textbf{Adaptive Logistic Meritocracy System (ALMS)}. This novel mechanism introduces a Sigmoid saturation curve to impose a "soft ceiling" on extreme popularity and dynamically adjusts sensitivity based on competition intensity. Stress-testing demonstrates that ALMS achieves a Pareto improvement. \textbf{Sensitivity analysis} on both the Bayesian inference hyperparameters and the ALMS control parameters validates the robustness of our conclusions across a broad parameter space. We recommend ALMS, alongside the "Judges' Choice," as the optimal strategy for the show's post-game era.
+
+    \begin{keywords}
+        \textbf{Inverse Bayesian Inference, Monte Carlo Simulation, Linear Mixed-Effects Model, Mechanism Evaluation, Adaptive System, Dancing with the Stars}
+    \end{keywords}
+
+\end{abstract}

@@ -1,0 +1,76 @@
+\documentclass{mcmthesis}  % 当使用 CTeX 套装时请注释上一行使用该行的设置
+\mcmsetup{tstyle=\color{red}\bfseries,%修改题号，队号的颜色和加粗显示，黑色可以修改为 black
+tcn = 2617432, problem = C, %修改队号，参赛题号
+sheet = true, titleinsheet = true, keywordsinsheet = true,
+titlepage = false, abstract = true}
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{tocloft}
+\usepackage{enumitem}
+
+\tocloftpagestyle{fancy}
+\setlength{\cftbeforesecskip}{2pt}      % section 前间距
+\setlength{\cftbeforesubsecskip}{1pt}   % subsection 前间距
+\setlength{\cftparskip}{0pt}  
+\setlist[itemize]{topsep=0pt, parsep=0pt, partopsep=0pt} % 全局去除 itemize 顶部间距
+\setlist[enumerate]{topsep=0pt, parsep=0pt, partopsep=0pt} % 全局去除 enumerate 顶部间距
+
+%四款字体可以选择
+\usepackage{times}
+%\usepackage{newtxtext}
+%\usepackage{palatino}
+%\usepackage{txfonts}
+
+\usepackage[utf8]{inputenc}
+\usepackage{indentfirst}  %首行缩进，注释掉，首行就不再缩进。
+\usepackage{lipsum}
+
+%\usepackage{ctex}
+
+% 调整页眉高度，消除 fancyhdr 的 \headheight too small 警告
+\setlength{\headheight}{14pt}
+
+\title{Popularity vs. Performance: Evaluation and Adaptive Optimization of Rating Mechanisms Based on DWTS}
+
+\begin{document}
+\input{abstract}
+
+\maketitle
+\setcounter{tocdepth}{2}
+\tableofcontents
+
+\newpage
+\input{introduction}
+
+\newpage
+\input{assumptions}
+
+\newpage
+\input{notations}
+
+\newpage
+\input{model1}
+
+\input{model2}
+
+\input{model3}
+
+\input{model4}
+
+\input{model_details}
+
+\newpage
+\input{memo}
+
+\newpage
+\input{references}
+\label{LastPage}
+
+\newpage
+\input{AI}
+
+\end{document}
+
