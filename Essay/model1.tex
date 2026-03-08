@@ -38,9 +38,7 @@ and their \textit{Judge Performance} $\mathbf{P}_t$ (short-term dance quality).
 
 Here, $\lambda$ represents the weight of dance performance in the fans' decision.
 Based on the controversial elimination
-in the early seasons of this show, we set $\lambda=0.2$.
-This low value reflects the fact that DWTS audiences care much more about
-their favorite celebrities' popularity than on-stage performance.
+in the early seasons of this show, we set $\lambda=0.4$ according to \textbf{sensitivity analysis (which will be detailed in later chapters)}. This reflects the fact that DWTS audiences care more about their favorite celebrities' popularity than on-stage performance. 
 
 The actual votes follow a \textbf{Dirichlet distribution}:
 $\mathbf{S}_t \sim \text{Dirichlet}(\kappa \cdot \boldsymbol{\mu}_t)$,
@@ -115,8 +113,8 @@ to reconstruct the specific voting history and quantify uncertainty.
 \subsection{Validation and Results}
 
 \subsubsection{Consistency Verification}
-The model achieves a \textbf{98.3\%} Historical Reproduction Rate across 34 seasons.
-This means that in 98.3\% of weeks, our estimated fan votes correctly
+The model achieves a \textbf{98.7\%} Historical Reproduction Rate across 34 seasons.
+This means that in 98.7\% of weeks, our estimated fan votes correctly
 characterize the actual eliminated contestant as the one with
 the lowest combined score (or in the Bottom-2).
 This high fidelity proves that our model is reliable.
