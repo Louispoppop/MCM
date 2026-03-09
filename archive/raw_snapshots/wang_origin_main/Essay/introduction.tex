@@ -1,0 +1,50 @@
+\section{Introduction}
+
+\subsection{Background}
+
+"Dancing with the Stars" (DWTS) is a globally recognized reality competition where celebrity and professional dance pairs are evaluated through a hybrid voting system combining expert judge scores and public fan votes. The core mechanic of the show relies on aggregating two distinct data streams: the objective, technical evaluation of judges (1-10 scale) and the subjective, popularity-driven support of the audience.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{figures/introduction.jpg}
+    \caption{The Post of the Show}
+    \label{fig:intro}
+\end{figure}
+
+Throughout its 34-season history, the U.S. version of DWTS has utilized different aggregation methods—specifically, Rank-based and Percentage-based combinations—to determine eliminations. Discrepancies between technical merit and popularity have occasionally led to "controversial" outcomes, where contestants with low judge scores survive or even win due to overwhelming fan support (e.g., Jerry Rice in Season 2, Bobby Bones in Season 27). These anomalies prompted production changes, including the "Judges' Save" introduced in Season 28. Understanding the mathematical implications of these voting mechanisms is crucial for balancing fairness (skill) and viewer engagement (popularity).
+
+\subsection{Literature Review}
+
+The problem of combining expert scores with public voting falls within the intersection of Social Choice Theory and Statistical Estimation.
+
+\begin{itemize}
+    \item Social Choice Theory: Traditional voting literature, prominently Arrow’s Impossibility Theorem, suggests that no rank-order voting system is perfectly fair under all criteria. Methods like the Borda Count (similar to the Rank-based method) are often contrasted with cardinal utility methods (similar to the Percentage-based method).
+    \item Latent Variable Models: To estimate unknown fan votes from binary outcomes (eliminated/safe), we draw upon literature regarding Inverse Problems and Logistic Regression. These methods allow for the inference of hidden parameters that best explain the observed state transitions.
+    \item Performance Analytics: Previous studies on competition dynamics suggest that "star power" and demographic relatability often outweigh technical skill in public polling, a phenomenon we will analyze using multivariate regression techniques.
+\end{itemize}
+
+\subsection{Clarifications and Restatements}
+
+The central challenge of this study is to analyze the mechanics of the DWTS voting system and the interactions between expert evaluation and public opinion. Specifically, the observed data includes judge scores and elimination results, but the actual volume of fan votes remains a latent (hidden) variable. To address this, we have broken down the problem into four specific tasks:
+
+Task 1: Fan Vote Estimation
+We must develop a mathematical model to reconstruct the unobserved fan votes for each contestant. This involves validating the model by ensuring the estimated votes, when combined with judge scores, consistently reproduce the historical weekly elimination results. We must also quantify the certainty of these estimates.
+
+Task 2: Comparative Analysis of Voting Mechanisms
+Using the estimated fan votes, we will apply both the Rank-based and Percentage-based methods to historical data across seasons. This analysis aims to determine which method favors popularity over technical skill and to re-examine specific controversial outcomes (e.g., Season 27). We will also assess the impact of the "Judges' Save" mechanism.
+
+Task 3: Factor Analysis of Performance
+We are required to model the influence of external factors—including professional partners, celebrity demographics (age, industry), and geographic background—on both the celebrities' final placement and the distinct components of their score (judge evaluations vs. fan support).
+
+Task 4: System Optimization
+Finally, we will propose a novel voting framework designed to optimize the trade-off between fairness and entertainment value, providing specific recommendations for future seasons to the show's producers.
+
+\subsection{Our Work}
+
+Briefly outline your main ideas and contributions. A typical structure is:
+\begin{itemize}
+  \item Propose a mathematical model (or several models) that captures the key mechanisms of the problem;
+  \item Design numerical algorithms or solution procedures to solve the model efficiently;
+  \item Carry out experiments or simulations and compare with baseline methods;
+  \item Provide sensitivity analysis, evaluation, and possible extensions.
+\end{itemize}

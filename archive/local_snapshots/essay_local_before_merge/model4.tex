@@ -1,0 +1,94 @@
+\section{Model IV: The Adaptive Logistic Meritocracy System}
+
+\subsection{Problem Formulation and Motivation}
+Our analysis mentioned above exposed a critical dichotomy in the existing aggregation rules:
+\begin{itemize}
+\item \textbf{Rank Rule (The Elitist Trap):} While ensuring high fairness by curbing the variance of fan votes, it suffers from "Structural Insensitivity." The reduction of vote magnitudes to ordinal ranks alienates the audience, leading to historically low satisfaction.
+\item \textbf{Percent Rule (The Populist Trap):} While maximizing fan satisfaction, it is plagued by "Linear Vulnerability." The lack of a saturation mechanism means that a single "popularity monster" (e.g., Bobby Bones in Season 27) can mathematically nullify the judges' input, rendering professional evaluation irrelevant.
+\end{itemize}
+
+To resolve this dilemma, we propose a "Third Way": a mechanism that respects the magnitude of the popular vote while imposing a soft ceiling on monopoly. We term this the \textbf{Adaptive Logistic Meritocracy System}.
+
+\subsection{Mathematical Model Establishment}
+
+\subsubsection{Sigmoid Transformation: The "Soft Ceiling" Mechanism}
+The core innovation of our model is the replacement of the linear vote share  with a non-linear effective score  via a Sigmoid transformation:
+\begin{equation}
+S(x) = \frac{1}{1 + e^{-K \cdot (x - c)}}
+\end{equation}
+where:
+\begin{itemize}
+\item $\mathrm{x}$: The share of raw fan votes of a contestant.
+\item $\mathrm{c}$: The "Average Line" (center), representing the baseline performance expectation.
+\item $\mathrm{K}$: The slope parameter that controls the sensitivity of the system.
+\end{itemize}
+
+\textbf{Mechanism Analysis:}
+As illustrated in Figure \ref{fig:sigmoid_mechanism}, this transformation creates three distinct zones:
+\begin{itemize}
+\item \textbf{Penalty Zone:} Contestants underperforming the average face score suppression, discouraging "free-riding."
+\item \textbf{Incentive Zone:} Near the average, the curve is steepest. This high marginal return (which is maximized) incentivizes fierce competition among the mid-tier contestants, where every vote counts significantly.
+\item \textbf{Saturation Zone:} For extreme outliers, the curve flattens (Diminishing Marginal Utility). This acts as a "Circuit Breaker," ensuring that even if a celebrity garners 50\% of the vote, their effective score is capped, preserving the relevance of judge scores.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{Task4_Mechanism_Adaptive.png}
+\caption{Mechanism of Adaptive Meritocracy. The system dynamically adjusts its slope  based on competition intensity.}
+\label{fig:sigmoid_mechanism}
+\end{figure}
+
+\subsubsection{Dynamic Adaptation: The "Smart Gain" Control}
+A static cannot accommodate the varying dynamics of different weeks. We introduce a dynamic adjustment mechanism where  is inversely proportional to the standard deviation of the vote distribution:
+\begin{equation}
+K_{week} = K_{base} + \frac{\alpha}{\sigma_{votes}}
+\end{equation}
+This effectively creates an \textbf{Adaptive Gain Control}:
+\begin{itemize}
+\item \textbf{Tight Race:} When vote shares are clustered,  spikes. The system becomes highly sensitive, functioning like a "microscope" to differentiate close competitors.
+\item \textbf{Blowout:} When a monopoly exists, relaxes to its base value, focusing primarily on the saturation effect to cap the leader.
+\end{itemize}
+
+\subsubsection{Normalization and Synthesis}
+To integrate this non-linear score with the linear judge scores, we employ a "One-vs-Rest" normalization strategy:
+\begin{equation}
+FinalScore_i = 0.5 \times P_{Judge, i} + 0.5 \times \frac{S(x_i)}{\sum_j S(x_j)}
+\end{equation}
+This ensures the structural integrity of the 50-50 weighting mandated by the competition format.
+
+\subsection{Simulation and Validation}
+
+\subsubsection{Case Study: The "Correction" of Bobby Bones}
+We stress-tested the model using Season 27, the "anomaly season" dominated by Bobby Bones. Figure \ref{fig:bobby_impact} visualizes his trajectory under the old Percent Rule versus our Adaptive System.
+
+\begin{itemize}
+\item \textbf{Observation:} Under the original rules (Purple Dashed Line), Bones consistently ranked \#1 despite poor dancing. Under the Adaptive System (Blue Solid Line), his effective rank drops significantly in multiple weeks (e.g., -2 rank drop in Week 4).
+\item \textbf{Result:} The system successfully identified his vote share as "inflationary" and applied the saturation mechanism. Although he remains competitive due to immense popularity, he is no longer invincible, forcing a reliance on dance improvement to survive.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{Task4_Impact_Bobby_Bones_Refined.png}
+\caption{Impact Analysis on Bobby Bones (S27)  (Note: Week 5 was a non-elimination week and is excluded).}
+\label{fig:bobby_impact}
+\end{figure}
+
+\subsection{Comparative Evaluation}
+We conducted a comprehensive comparison between the Rank Rule, Percent Rule, and our Adaptive System across all 34 seasons. Figure \ref{fig:three_way_metrics} presents the results.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{Task4_Metrics_Final_ThreeWay.png}
+\caption{Comprehensive Metric Comparison}
+\label{fig:three_way_metrics}
+\end{figure}
+
+\textbf{Quantitative Results:}
+\begin{itemize}
+\item \textbf{Fairness Index($I_{\text{fair}}$) vs. Percent Rule:} The Adaptive System increases the correlation with judge rankings by \textbf{13.3\%}. This confirms the restoration of professional integrity.
+\item \textbf{Fan Satisfaction Index($I_{\text{fan}}$) vs. Rank Rule:} Compared to the elitist Rank Rule, our system preserves fan satisfaction by \textbf{18.0\%}.
+\item \textbf{The Trade-off:} We achieve this massive gain in fairness at the cost of only a marginal \textbf{4.6\%} drop in fan satisfaction compared to the populist Percent Rule.
+\end{itemize}
+
+\subsection{Conclusion}
+The simulation confirms that the \textbf{Adaptive Logistic Meritocracy System} is not merely a compromise, but a robust optimization. By implementing \textbf{Non-linear Saturation} and \textbf{Dynamic Sensitivity}, it successfully constructs a "Trade-off Frontier" that outperforms the binary choice of previous eras. It is the optimal theoretical model for the future of \textit{Dancing with the Stars}, balancing the dual imperatives of professional credibility and mass entertainment.

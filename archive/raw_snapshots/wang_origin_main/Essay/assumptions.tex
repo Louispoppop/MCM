@@ -1,0 +1,15 @@
+\section{Assumptions}
+
+% In this section, list and explain all modeling assumptions you make. Each assumption should be realistic, necessary, and clearly stated.
+
+\subsection{Task 1}
+
+\begin{description}
+  \item[Assumption 1: Performance-Popularity Mixture Hypothesis] Fan voting is driven by a dual mechanism: a long-term \textit{Base Popularity} (invariant fan base) and a short-term \textit{Performance} component (immediate reaction to the dance). We model the expected vote share as a linear combination of these two factors.
+  \item[Assumption 2: Rational Judges' Save (Season 28+).] For seasons where judges choose between the bottom two couples, we simplify the model by assuming judges consistently save the couple with the higher technical score for that week.
+  \item[Assumption 3: Dirichlet Distribution for Vote Shares.] Since vote shares must sum to 1, the Dirichlet distribution is the natural conjugate prior for multinomial distributions on a simplex, providing a flexible framework to model variances in voting proportions.
+  \item[Assumption 4: Constant Total Vote Volume.] Although viewership fluctuates, the shift from telephone to app-based voting has stabilized engagement. Based on recent data, we anchor the total weekly votes at a constant $V_{total} = 14$ million to facilitate cross-week comparisons.
+\end{description}
+
+
+% You can add, delete, or refine the above assumptions according to the specific contest problem.

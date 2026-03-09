@@ -1,0 +1,38 @@
+\section{Introduction}
+
+\subsection{Background}
+
+"Dancing with the Stars" (DWTS) is a hit reality competition pairing celebrities with professional dancers~\cite{errington2025dancing}. Each week, pairs are evaluated through a hybrid mechanism: judge scores from experts and fan votes from the audience. These two inputs are combined to determine which couple is eliminated, ultimately crowning a champion in the finale.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{figures/introduction.jpg}
+    \caption{The Post of the Show}
+    \label{fig:intro}
+\end{figure}
+Over 34 seasons, the show has utilized different aggregation methods—primarily Rank-based and Percent-based systems—to weigh these inputs. However, the clash between dance skill and star power has led to notable controversies, where popular contestants advanced despite low technical scores. These discrepancies raise fundamental questions about how to design a fair system that maintains competitive integrity while sustaining audience participation.
+
+\subsection{Restatement of the Problem}
+
+The central objective of this research is to decode the decision-making dynamics within "Dancing with the Stars," specifically how professional evaluations interact with public preference to determine contest results. The specific tasks are defined as follows:
+
+\begin{itemize}
+    \item \textbf{Task 1: Estimation of Fan Voting Data.} We are required to build a statistical model to infer the undisclosed fan votes for each couple in each week. This involves verifying that our inferred data, when integrated with judge scores, accurately replicates the historical elimination patterns, while also providing a metric for the certainty of these inferences.
+
+    \item \textbf{Task 2: Evaluation of Aggregation Methodologies.} We need to check the historical performance of both Rank-based and Percentage-based voting systems using our fan vote estimates. This includes determining which system excessively caters to fan votes, simulating whether "controversial" outcomes could have been avoided under different rules, and evaluating the efficacy of the "Judges' Choice" intervention.
+
+    \item \textbf{Task 3: Impact Analysis of Celebrity Characteristics.} We must quantify the influence of auxiliary variables (such as the assigned professional partner and celebrity demographics) on the competition's final standings. A key aspect is to distinguish how these attributes differentially affect experts versus the audience.
+
+    \item \textbf{Task 4: Policy Optimization and Strategic Recommendation.} We need to propose a novel system that optimizes the trade-off between technical guaranties and viewer engagement. Furthermore, we are supposed to compile our insights into a concise memo for the producers of DWTS, offering evidence-based guidelines for future seasons.
+\end{itemize}
+
+\subsection{Our Work}
+
+In this paper, we first conducted rigorous preprocessing on the provided data. We then established distinct yet interconnected mathematical models tailored for each specific task. These models successfully addressed the core requirements of each problem. Furthermore, we integrated our independent insights and additional reflections into each model to enhance the depth of our analysis. The overall workflow of our methodology is illustrated in Figure \ref{fig:flowchart}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\linewidth]{figures/流程图.png}
+    \caption{Our Work}
+    \label{fig:flowchart}
+\end{figure}

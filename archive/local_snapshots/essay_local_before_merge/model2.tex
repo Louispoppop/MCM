@@ -1,0 +1,151 @@
+\section{Model II: Analysis of Celebrity Characteristics}
+
+\subsection{Feature Interpretation and Engineering}
+To analyze the impact of various characteristics, we categorize and encode the available data. 
+There are five key features serve as celebrity characteristics: industry, age, nationality, professional partner strength, and base popularity~\cite{oconnor2018amazon}. 
+
+\subsubsection{Industry \& Age \& Nationality}
+We process the three demographic features, figure \ref{fig:characteristics_dist} illustrates the distributions of the three demographic features among contestants.
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}{0.28\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/行业饼图.png}
+        \label{fig:industry_dist}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.28\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/年龄饼图.png}
+        \label{fig:age_dist}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.38\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/国籍柱状图.png}
+        \label{fig:nationality_dist}
+    \end{minipage}
+    \caption{Distribution of Celebrity Characteristics: Industry, Age, and Nationality}
+    \label{fig:characteristics_dist}
+\end{figure}
+
+\begin{itemize}
+    \item \textbf{Industry Classification:} The original data contained over 20 professions. To reduce sparsity, we grouped them into four categories based on shared skill sets: \textbf{Athletic} (high physical coordination), \textbf{Performance} (stage presence), \textbf{Media} (communication skills), and \textbf{Other} (baseline).
+    \item \textbf{Age Buckets:} Contestants are categorized into \textbf{Young} ($<30$), \textbf{Mid} ($30-55$), and \textbf{Senior} ($>55$) to capture different career stages.
+    \item \textbf{Nationality:} We identify whether contestants are from the United States to capture potential home-field advantage.
+\end{itemize}
+
+\subsubsection{Professional Partner Strength}
+The professional partner plays a huge role in a celebrity's journey. We engineered a "Pro Strength" characteristic. This metric is derived specifically from the professional partner's historical data, calculated as the equally weighted average (avoid introducing subjective bias) of their historical normalized judge scores ($S_{norm}$) and historical normalized final placements ($P_{norm}$):
+\begin{equation}
+\text{Pro Strength} = 0.5 \times S_{norm} + 0.5 \times P_{norm}
+\end{equation}
+\subsubsection{Base Popularity}
+The Base Popularity metric, derived in Task 1, is included to capture the fan base size.
+
+\subsection{Core Model Construction}
+We employ a \textbf{Linear Mixed-Effects Model (LMM)} to isolate the effect of individual characteristics while controlling for season-to-season systemic variability.
+
+We define $y_{i,s}^{(t)}$ as the target variable, $\mathbf{x}_{i,s}$ as the vector of fixed characteristics, and $b_s^{(t)} \sim \mathcal{N}(0, \sigma_b^2)$ as the random intercept for season $s$. The model is specified as:
+\begin{equation}
+ y_{i,s}^{(t)} = \beta_0^{(t)} + \mathbf{x}_{i,s}^{\top} \boldsymbol{\beta}^{(t)} + b_s^{(t)} + \varepsilon_{i,s}^{(t)}
+\end{equation}
+where $\boldsymbol{\beta}^{(t)}$ represents the coefficients quantifying the impact of each characteristic.
+
+\subsection{Validation Strategy and Metrics}
+To ensure robustness, we used two data splitting strategies:
+\begin{enumerate}
+    \item \textbf{Chronological Split:} Training on the first 80\% of seasons, predicting the last 20\%. This tests the model's ability to forecast future outcomes.
+    \item \textbf{Odd-Even Split:} Training on even seasons and testing on odd seasons. Considering that some celebrities may appear repeatedly or specific trends may cluster in the final 20\% of the data, this split ensures the test set is as diverse as possible. This strategy allows the model to better fit various scenarios across the entire timeline, providing a robust check against era-specific biases.
+\end{enumerate}
+
+We evaluate performance using \textbf{RMSE} (Root Mean Square Error) and $\mathbf{R^2}$ (Coefficient of Determination), defined as follows:
+\begin{equation}
+    \text{RMSE} = \sqrt{\frac{1}{n} \sum_{j=1}^n (y_j - \hat{y}_j)^2}, \quad R^2 = 1 - \frac{\sum_{j=1}^n (y_j - \hat{y}_j)^2}{\sum_{j=1}^n (y_j - \bar{y})^2} 
+\end{equation}
+
+\subsection{Results and Discussion}
+
+\subsubsection{Model Performance}
+Table \ref{tab:model_results} compares the generalization performance on the test sets of both splitting strategies.
+
+\begin{table}[h]
+\centering
+\caption{Test Set Performance Comparison: Chronological vs. Odd-Even Split}
+\label{tab:model_results}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Target Variable} & \multicolumn{2}{c}{\textbf{Test RMSE}} & \multicolumn{2}{c}{\textbf{Test $R^2$}} \\
+ & \textbf{Chrono} & \textbf{Odd-Even} & \textbf{Chrono} & \textbf{Odd-Even} \\
+\midrule
+Judge Score Rate & 0.104 & 0.089 & 0.439 & 0.533 \\
+Fan Vote Share & 0.007 & 0.009 & 0.988 & 0.989 \\
+Placement Encoded & 0.236 & 0.177 & 0.312 & 0.620 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The analysis reveals varying predictiveness across different competition aspects:
+
+\begin{itemize}
+    \item \textbf{Fan Vote Share:} Both models achieve near-perfect $R^2$ ($\approx 0.99$). This consistency confirms that pre-existing popularity is the overwhelming, time-invariant driver of fan decisions~\cite{gershman2012teaching,wade2014dancing}.
+    \item \textbf{Judge Score Rate:} Judges adhere to relatively objective standards; yet, static celebrity profiles cannot account for dynamic technical execution or stage accidents, limiting the initial fit. However, the performance improvement in the Odd-Even split indicates that with sufficiently comprehensive training data, the model successfully identifies the fixed baseline of scoring potential. This validates our design: despite random performance variance, the impact of characteristics on judge perception is stable and learnable.
+    \item \textbf{Placement Encoded:} Modeling final placement is significantly harder than scoring due to the inherent randomness of elimination. The dramatic leap in the Odd-Even split ($R^2=0.312 \to 0.620$) serves as strong evidence for our feature selection. It suggests that the Chronological split fails to generalize to new "types" of contestants. In contrast, the Odd-Even split ensures that if a contestant profile (e.g., Person A in Season 8) appears in the training set, a similar profile (e.g., Person A returning or a similar one in Season 15) in the test set can be accurately predicted. This confirms that when the data distribution is fully covered, our features are highly effective predictors of success.
+\end{itemize}
+
+\subsubsection{Analysis of Characteristics on Contestant Success}
+To compare success across seasons with varying cohort sizes ($N_s$), we define the \textbf{Normalized Placement Score} ($y_{place}$) for a contestant with rank $r_{i,s}$:
+\begin{equation}
+y_{place} = \frac{N_s - r_{i,s} + 1}{N_s}   
+\end{equation}
+
+This normalizes placement to $(0, 1]$, where a value closer to 1 indicates a superior rank, ensuring fair comparison across different seasons.
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}{0.42\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/人气-排名点图.png}
+        \label{fig:popularity_dots}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.56\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/问题1折线图.png}
+        \label{fig:q1_line}
+    \end{minipage}
+    \caption{Impact of Characteristics on Success. Left: Base Popularity vs. Final Placement. Right: Coefficient magnitudes of all features.}
+    \label{fig:success_factors}
+\end{figure}
+
+We investigate the impact of characteristics on this final placement. Figure \ref{fig:success_factors} presents both the direct correlation between popularity and placement (Left) and the relative magnitude of all characteristic coefficients in the model (Right).
+The coefficient analysis reveals a clear hierarchy of influence:
+\begin{itemize}
+    \item \textbf{Dominance of Popularity:} Base Popularity ($\beta \approx 2.57$) is the single most decisive factor. As shown in the left plot of Figure \ref{fig:success_factors}, while low-popularity contestants exhibit a wide variance in outcomes, high-popularity celebrities are almost guaranteed a top-tier finish. This explains the massive coefficient: high initial fame acts as a "safety net," preventing early elimination.
+    \item \textbf{Professional Partner Strength:} The second most influential factor is the partner's strength ($\beta \approx 0.27$). A top-tier partner can significantly elevate a celebrity's placement, potentially improving their rank by approximately one full position compared to an average partner.
+    \item \textbf{Other Characteristics:} Demographics and Industry play statistically significant but smaller roles. Youth ($\beta \approx 0.03$) and performance-oriented backgrounds (Performance/Media) offer slight competitive edges ($\beta \approx 0.03$), likely contributing to better technical scores, whereas older contestants or those from non-entertainment backgrounds face a slight statistical disadvantage.
+\end{itemize}
+
+\subsubsection{Comparative Impact on Judges vs. Fans}
+To determine whether characteristics influence judges and fans differently, we extract coefficients from the Odd-Even Split model, which demonstrated superior robustness and predictive power. Figure \ref{fig:q2_dumbbell} visualizes the comparative impact by displaying the coefficient magnitudes relative to the scale of each target variable.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/问题2哑铃图.png}
+    \caption{Comparison of Characteristic Impact: Judges vs. Fans.}
+    \label{fig:q2_dumbbell}
+\end{figure}
+
+The analysis reveals a fundamental divergence in decision mechanisms:
+
+\begin{itemize}
+    \item \textbf{Popularity Monopoly vs. Balanced Meritocracy:} The most striking difference lies in the structure of influence. Fan voting is a "winner-take-all" system dominated by \textbf{Base Popularity} ($\beta \approx 0.96$). Other factors like dance skill or age have negligible direct impact on fans—they simply vote for who they already know. In contrast, the Judge Score model reflects a "pluralistic" evaluation. While popularity still matters, technical factors like \textbf{Pro Partner Strength} ($\beta \approx 0.23$), \textbf{Performance Industry} ($\beta \approx 0.28$), and \textbf{Youth} ($\beta \approx 0.35$) play significant concurrent roles.
+    \item \textbf{Specific Disparities:}
+    \begin{itemize}
+        \item \textbf{Partner Strength:} Highly valued by judges (reflecting technical quality) but ignored by fans.
+        \item \textbf{Nationality:} Consistently shows near-zero impact in both models, indicating that neither judges nor fans exhibit significant home-country bias.
+    \end{itemize}
+\end{itemize}
+
+In conclusion, the impact is \textbf{not} the same. Judges evaluate the \textit{performance} (multi-factor technical assessment), while fans largely validate the \textit{person} (single-factor popularity contest)~\cite{biggs2024maths}. Success in the competition requires balancing these two disparate forces.
